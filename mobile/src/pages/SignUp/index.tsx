@@ -20,7 +20,7 @@ import {
 } from './styles';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
-import InputMask from '../../components/InputMask';
+
 
 import api from '../../api';
 
@@ -28,7 +28,6 @@ interface SignUpFormatData {
   name: string;
   cpf: string;
   rg: string;
-  born: Date;
   email: string;
   password: string;
 }
@@ -41,7 +40,7 @@ const SignUp: React.FC = () => {
   const CPFRef = useRef<TextInput>(null);
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
-  const bornRef = useRef<TextInput>(null);
+
 
   const handleSignUp = useCallback(
     async (data: SignUpFormatData) => {
@@ -113,10 +112,11 @@ const SignUp: React.FC = () => {
                 placeholder="Nome Completo"
               />
 
-              <InputMask
-                inputRef={CPFRef}
+              <Input
+                ref={CPFRef}
+                mask="cpf"
+                maxLength={14}
                 name="cpf"
-                type="cpf"
                 keyboardType="numeric"
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -127,43 +127,21 @@ const SignUp: React.FC = () => {
                 }}
               />
 
-              <InputMask
-                inputRef={RGRef}
-                type={'custom'}
-                options={{
-                  mask: '99.999.999-S',
-
-                  getRawValue: function(value:string) {
-
-                    return value.replace('.','').replace('.','').replace('-','');
-                  },
-                }}
+              <Input
+                ref={RGRef}
+                mask="rg"
+                maxLength={12}
                 name="rg"
                 autoCorrect={false}
                 autoCapitalize="none"
                 placeholder="RG"
                 returnKeyType="next"
                 onSubmitEditing={() => {
-                  bornRef.current?.focus();
+                  emailRef.current?.focus();
                 }}
               />
 
-              <InputMask
-                inputRef={bornRef}
-                name="born"
-                type={'datetime'}
-                options={{
-                  format: 'DD/MM/YYYY'
-                }}
-                keyboardType="numeric"
-                autoCorrect={false}
-                autoCapitalize="none"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  emailRef.current?.focus();
-                }}
-                placeholder="Data de nascimento"
-              />
+
 
               <Input
                 ref={emailRef}

@@ -1,14 +1,17 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef,useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
-import { TextInput, Alert,  ScrollView,
+import {
+  TextInput,
+  Alert,
+  ScrollView,
   Platform,
-  KeyboardAvoidingView, } from 'react-native';
+  KeyboardAvoidingView,
+} from 'react-native';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
-import InputMask from '../../components/InputMask';
 import { useAuth } from '../../hooks/auth';
 import logoImg from '../../assets/logo.png';
 import getValidationErrors from '../../utils/getValidationErrors';
@@ -22,12 +25,13 @@ import {
 } from './styles';
 
 interface LogInFormData {
-  cpf:string;
+  cpf: string;
   password: string;
 }
 
 const LogIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+  const cpfInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const navigation = useNavigation();
 
@@ -35,7 +39,7 @@ const LogIn: React.FC = () => {
 
   const handleSubmit = useCallback(
     async (data: LogInFormData) => {
-      console.log('data', data)
+      console.log('data', data);
       try {
         formRef.current?.setErrors({});
         const schema = Yup.object().shape({
@@ -47,12 +51,10 @@ const LogIn: React.FC = () => {
           abortEarly: false,
         });
 
-         await logIn({
+        await logIn({
           cpf: data.cpf,
           password: data.password,
         });
-
-
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -69,60 +71,66 @@ const LogIn: React.FC = () => {
     [logIn, navigation],
   );
 
+
   return (
     <>
-
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={{ flex: 1 }}
         enabled
       >
-        <ScrollView >
-      <Container>
-      <LogoImg source={logoImg} />
+        <ScrollView>
+          <Container>
+            <LogoImg source={logoImg} />
 
-        <Title>Faça seu login</Title>
+            <Title>Faça seu login</Title>
 
-        <Form ref={formRef} onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <InputMask
-            name="cpf"
-            type="cpf"
-            placeholder="CPF"
-            autoCorrect={false}
-            autoCapitalize="none"
-            keyboardType="numeric"
-            returnKeyType="next"
-            onSubmitEditing={() => {
-              passwordInputRef.current?.focus();
-            }}
-          />
-          <Input
-            ref={passwordInputRef}
-            name="password"
-            placeholder="Senha"
-            secureTextEntry
-            returnKeyType="send"
-            onSubmitEditing={() => formRef.current?.submitForm()}
-          />
+            <Form
+              ref={formRef}
+              onSubmit={handleSubmit}
+              style={{ width: '100%' }}
+            >
+              <Input
+                ref={cpfInputRef}
+                name="cpf"
+                mask="cpf"
+                maxLength={14}
+                placeholder="CPF"
+                autoCorrect={false}
+                autoCapitalize="none"
+                keyboardType="numeric"
+                returnKeyType="next"
+                onSubmitEditing = { () => {
+                  passwordInputRef.current?.focus();
+                }}
+              />
+              <Input
+                ref={passwordInputRef}
+                name="password"
+                placeholder="Senha"
+                secureTextEntry
+                returnKeyType="send"
+                onSubmitEditing={() => formRef.current?.submitForm()}
+              />
 
-          <Button
-            onPress={() => {
-              formRef.current?.submitForm();
-            }}
-          >
-            Entrar
-          </Button>
+              <Button
+                onPress={() => {
+                  formRef.current?.submitForm();
+                }}
+              >
+                Entrar
+              </Button>
 
-          <ButtonForgotPassword>
-            <Text>Esqueci minha senha</Text>
-          </ButtonForgotPassword>
+              <ButtonForgotPassword>
+                <Text>Esqueci minha senha</Text>
+              </ButtonForgotPassword>
 
-          <ButtonSigIn onPress={() => navigation.navigate('SignUp')}>
-            <Text>Cadastre-se</Text>
-          </ButtonSigIn>
-        </Form>
-      </Container>
-      </ScrollView>
+              <ButtonSigIn onPress={() => navigation.navigate('SignUp')}>
+                <Text>Cadastre-se</Text>
+              </ButtonSigIn>
+            </Form>
+          </Container>
+        </ScrollView>
       </KeyboardAvoidingView>
     </>
   );

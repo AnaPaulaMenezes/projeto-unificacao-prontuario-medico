@@ -9,37 +9,67 @@ import React, {
 import { TextInputProps } from 'react-native';
 import { useField } from '@unform/core';
 import { Container, TextInput } from './styles';
+import {maskCPF, maskPhone, maskRG, maskDate,getRawValue} from '../../utils/masks';
 
 interface InputProps extends TextInputProps {
   name: string;
   icon?: string;
-  rawValue?:string;
+  mask?: 'date' | 'cpf' | 'rg' | 'phone' ;
 }
+
 interface InputValueReference {
   value: string;
 }
+
 interface InputRef {
   focus(): void;
 }
 
 const Input: React.RefForwardingComponent<InputRef, InputProps> = (
-  { name, icon, onChangeText, rawValue, ...rest },
+  { name, icon , mask, ...rest },
   ref,
 ) => {
-
   const inputElementRef = useRef<any>(null);
   const { registerField, defaultValue = '', fieldName, error } = useField(name);
   const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
+  const [textValue,setTextValue] = useState('');
+  const [rawValue,setRawValue] = useState('');
 
 
   const handleOnChange = useCallback(
-    (text) => {
-      if (inputValueRef.current) inputValueRef.current.value = text;
-      if (onChangeText) onChangeText(text);
+    text => {
+      let maskedValue = '';
+      if (mask) {
+        switch (mask) {
+          case 'cpf':
+            maskedValue = maskCPF(text);
+            break;
+
+          case 'rg':
+            maskedValue = maskRG(text);
+            break;
+
+          case 'phone':
+            maskedValue = maskPhone(text);
+            break;
+
+          case 'date':
+            maskedValue = maskDate(text);
+            text = maskedValue;
+            break;
+        }
+        setTextValue(maskedValue);
+        setRawValue(getRawValue(maskedValue));
+      }else {
+        setTextValue(text);
+        setRawValue(text);
+      }
     },
-    [onChangeText],
+
+
+    [rawValue,textValue],
   );
 
   const handleInputFocus = useCallback(() => {
@@ -59,16 +89,14 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   }));
 
   useEffect(() => {
-    if(rawValue){
-      inputValueRef.current.value = rawValue;
-    }
-
     registerField<string>({
       name: fieldName,
       ref: inputValueRef.current,
       path: 'value',
-
     });
+
+    inputValueRef.current.value = rawValue;
+
   }, [fieldName, registerField,rawValue]);
 
   return (
@@ -80,11 +108,12 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
       /> */}
       <TextInput
         ref={inputElementRef}
+        value={textValue}
         {...rest}
         keyboardAppearance="dark"
         placeholderTextColor="#666360"
         defaultValue={defaultValue}
-        onChangeText={handleOnChange}
+        onChangeText={(text) => {handleOnChange(text)}}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
       />

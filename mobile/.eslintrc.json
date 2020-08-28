@@ -1,6 +1,8 @@
 {
     "env": {
-        "es6": true
+      "browser": true,
+      "es6": true,
+      "jest": true
     },
     "extends": [
         "plugin:@typescript-eslint/recommended",
@@ -20,7 +22,8 @@
             "jsx": true
         },
         "ecmaVersion": 2018,
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": "./tsconfig.json"
     },
     "plugins": [
         "react",
@@ -41,7 +44,21 @@
           "ts": "never",
           "tsx": "never"
         }
-      ]
+      ],
+
+      "import/no-duplicates": "off",
+      "react/prop-types": "off",
+      "no-unused-expressions": "off",
+      "react/jsx-props-no-spreading": "off",
+      "@typescript-eslint/camelcase": "off",
+      "camelcase": "off",
+      "@typescript-eslint/explicit-function-return-type": [
+        "error",
+        {
+          "allowExpressions": true
+        }
+      ],
+
     },
 
     "settings": {

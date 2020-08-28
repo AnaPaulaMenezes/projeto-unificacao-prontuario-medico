@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components/native';
-import TextInputMask from 'react-native-text-input-mask';
 // import FeatherIcon from 'react-native-vector-icons/Feather';
 
 interface ContainerProps {
