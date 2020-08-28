@@ -113,9 +113,10 @@ const SignUp: React.FC = () => {
                 placeholder="Nome Completo"
               />
 
-              <Input
-                ref={CPFRef}
+              <InputMask
+                inputRef={CPFRef}
                 name="cpf"
+                type="cpf"
                 keyboardType="numeric"
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -126,8 +127,17 @@ const SignUp: React.FC = () => {
                 }}
               />
 
-              <Input
-                ref={RGRef}
+              <InputMask
+                inputRef={RGRef}
+                type={'custom'}
+                options={{
+                  mask: '99.999.999-S',
+
+                  getRawValue: function(value:string) {
+
+                    return value.replace('.','').replace('.','').replace('-','');
+                  },
+                }}
                 name="rg"
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -138,9 +148,13 @@ const SignUp: React.FC = () => {
                 }}
               />
 
-              <Input
-                ref={bornRef}
+              <InputMask
+                inputRef={bornRef}
                 name="born"
+                type={'datetime'}
+                options={{
+                  format: 'DD/MM/YYYY'
+                }}
                 keyboardType="numeric"
                 autoCorrect={false}
                 autoCapitalize="none"

@@ -8,6 +8,7 @@ import { TextInput, Alert,  ScrollView,
   KeyboardAvoidingView, } from 'react-native';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
+import InputMask from '../../components/InputMask';
 import { useAuth } from '../../hooks/auth';
 import logoImg from '../../assets/logo.png';
 import getValidationErrors from '../../utils/getValidationErrors';
@@ -21,7 +22,7 @@ import {
 } from './styles';
 
 interface LogInFormData {
-  cpf: string;
+  cpf:string;
   password: string;
 }
 
@@ -32,8 +33,9 @@ const LogIn: React.FC = () => {
 
   const { logIn } = useAuth();
 
-  const handleSubimit = useCallback(
+  const handleSubmit = useCallback(
     async (data: LogInFormData) => {
+      console.log('data', data)
       try {
         formRef.current?.setErrors({});
         const schema = Yup.object().shape({
@@ -45,11 +47,12 @@ const LogIn: React.FC = () => {
           abortEarly: false,
         });
 
-        await logIn({
+         await logIn({
           cpf: data.cpf,
           password: data.password,
         });
-        navigation.navigate('History');
+
+
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -80,13 +83,14 @@ const LogIn: React.FC = () => {
 
         <Title>Faça seu login</Title>
 
-        <Form ref={formRef} onSubmit={handleSubimit} style={{ width: '100%' }}>
-          <Input
+        <Form ref={formRef} onSubmit={handleSubmit} style={{ width: '100%' }}>
+          <InputMask
             name="cpf"
+            type="cpf"
             placeholder="CPF"
             autoCorrect={false}
             autoCapitalize="none"
-            keyboardType="email-address"
+            keyboardType="numeric"
             returnKeyType="next"
             onSubmitEditing={() => {
               passwordInputRef.current?.focus();

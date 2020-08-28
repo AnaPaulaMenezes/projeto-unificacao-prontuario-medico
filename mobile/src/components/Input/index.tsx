@@ -13,6 +13,7 @@ import { Container, TextInput } from './styles';
 interface InputProps extends TextInputProps {
   name: string;
   icon?: string;
+  rawValue?:string;
 }
 interface InputValueReference {
   value: string;
@@ -22,15 +23,24 @@ interface InputRef {
 }
 
 const Input: React.RefForwardingComponent<InputRef, InputProps> = (
-  { name, icon, ...rest },
+  { name, icon, onChangeText, rawValue, ...rest },
   ref,
 ) => {
+
   const inputElementRef = useRef<any>(null);
   const { registerField, defaultValue = '', fieldName, error } = useField(name);
   const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
-
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
+
+
+  const handleOnChange = useCallback(
+    (text) => {
+      if (inputValueRef.current) inputValueRef.current.value = text;
+      if (onChangeText) onChangeText(text);
+    },
+    [onChangeText],
+  );
 
   const handleInputFocus = useCallback(() => {
     setIsFocused(true);
@@ -49,12 +59,17 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   }));
 
   useEffect(() => {
+    if(rawValue){
+      inputValueRef.current.value = rawValue;
+    }
+
     registerField<string>({
       name: fieldName,
       ref: inputValueRef.current,
       path: 'value',
+
     });
-  }, [fieldName, registerField]);
+  }, [fieldName, registerField,rawValue]);
 
   return (
     <Container isFocused={isFocused} isErrored={!!error}>
@@ -69,9 +84,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
         keyboardAppearance="dark"
         placeholderTextColor="#666360"
         defaultValue={defaultValue}
-        onChangeText={value => {
-          inputValueRef.current.value = value;
-        }}
+        onChangeText={handleOnChange}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
       />

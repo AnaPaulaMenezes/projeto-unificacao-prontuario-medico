@@ -25,12 +25,7 @@ usersRouter.post('/', async (request, response) => {
   return response.json(user);
 });
 
-usersRouter.delete('/:id', async (request, response) => {
-  const { id } = request.params;
-  const deleteUsers = new DeleteUserService();
-  const result = await deleteUsers.execute(id);
-  return response.status(201).json(result);
-});
+
 
 
 export default usersRouter;

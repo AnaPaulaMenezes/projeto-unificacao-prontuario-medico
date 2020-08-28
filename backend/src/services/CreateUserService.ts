@@ -17,7 +17,8 @@ class CreateUser{
     const userRepositorie = getRepository(User);
     const userExists = await userRepositorie.find({where:{cpf}});
 
-    if (userExists) {
+
+    if (userExists.length > 0) {
       throw new AppError('Invalid CPF', 401);
     }
 
