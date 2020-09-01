@@ -17,10 +17,10 @@ usersRouter.get('/', async (request, response) => {
 });
 
 usersRouter.post('/', async (request, response) => {
-  const { name, cpf, rg, password, born } = request.body;
+  const { name, cpf, rg, password } = request.body;
   const createUser = new CreateUserService();
   const user = await createUser.execute({
-    name, cpf, rg, password, born
+    name, cpf, rg, password,
   });
   return response.json(user);
 });
