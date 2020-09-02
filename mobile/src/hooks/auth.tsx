@@ -49,15 +49,15 @@ const AuthProvider: React.FC = ({ children }) => {
     const response = await api.post('sessions', { cpf, password });
     const { token, user } = response.data;
     await AsyncStorage.multiSet([
-      ['@project.token', token],
-      ['@project.user', JSON.stringify(user)],
+      ['@project:token', token],
+      ['@project:user', JSON.stringify(user)],
     ]);
 
     setData({ token, user });
   }, []);
 
   const signOut = useCallback(async () => {
-    await AsyncStorage.multiRemove(['@project.user', '@project.token']);
+    await AsyncStorage.multiRemove(['@project:user', '@project:token']);
 
     setData({} as AuthState);
   }, []);
