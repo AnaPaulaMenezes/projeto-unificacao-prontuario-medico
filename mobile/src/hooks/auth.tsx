@@ -37,6 +37,7 @@ const AuthProvider: React.FC = ({ children }) => {
         '@project:user',
       ]);
 
+
       if (token[1] && user[1]) {
         setData({ token: token[1], user: JSON.parse(user[1]) });
       }
