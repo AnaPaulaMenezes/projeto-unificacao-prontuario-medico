@@ -2,11 +2,13 @@ import {
   Entity,
   Column,
   CreateDateColumn,
-  UpdateDateColumn, PrimaryColumn, PrimaryGeneratedColumn
+  UpdateDateColumn, PrimaryColumn, PrimaryGeneratedColumn, OneToMany,JoinColumn
 } from 'typeorm';
+import Email from './Email';
+
 
 @Entity('Usuario')
-class User {
+class Usuario {
   @PrimaryGeneratedColumn()
   Id_Usuario: number;
 
@@ -30,6 +32,9 @@ class User {
 
   @UpdateDateColumn()
   dtAlteracao_Usuario: Date;
+
+  @OneToMany(type => Email, email => email.user, {cascade: true})
+  emails: Email[];
 }
 
-export default User;
+export default Usuario;

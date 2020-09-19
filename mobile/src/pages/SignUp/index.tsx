@@ -16,7 +16,7 @@ import {
   Title,
   Text,
   ButtonSigIn,
-  ButtonForgotPassword,
+
 } from './styles';
 import Button from '../../components/Button';
 import Input from '../../components/Input';

@@ -20,10 +20,10 @@ usersRouter.get('/',ensureAuthenticated, async (request:Request, response:Respon
 
 //Cadastra um novo usuario
 usersRouter.post('/',async (request: Request, response:Response) => {
-  const { nome_Usuario, cpf_Usuario, rg_Usuario, senha_Usuario } = request.body;
+  const { nome_Usuario, cpf_Usuario, rg_Usuario, senha_Usuario, email_Usuario } = request.body;
   const createUser = new CreateUserService();
   const usuario = await createUser.execute({
-    nome_Usuario, cpf_Usuario, rg_Usuario, senha_Usuario
+    nome_Usuario, cpf_Usuario, rg_Usuario, senha_Usuario,email_Usuario
   });
   return response.json(usuario);
 });
