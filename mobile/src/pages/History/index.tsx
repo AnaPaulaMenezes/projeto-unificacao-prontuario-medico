@@ -1,9 +1,8 @@
-import React from 'react';
+import React, {useEffect}from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
-import InputMask from '../../components/InputMask';
 import logoImg from '../../assets/logo.png';
 import {
   Container,
@@ -13,10 +12,18 @@ import {
   Text,
   LogoImg,
 } from './styles';
+import api from '../../api';
 
-const LogIn: React.FC = () => {
+const History: React.FC = () => {
   const navigation = useNavigation();
+
+  useEffect(()=>{
+    api.get('users').then((response) =>{
+      console.log('resp', response.status)
+    })
+  })
   return (
+
     <>
       <Container>
         <Text>Bem Vindo!</Text>
@@ -24,4 +31,4 @@ const LogIn: React.FC = () => {
     </>
   );
 };
-export default LogIn;
+export default History;

@@ -8,13 +8,13 @@ import AuthenticateUserService from '../services/AuthenticateUserService';
 const sessionsRouter = Router();
 
 sessionsRouter.post('/',  async (request: Request, response: Response): Promise<Response> => {
-  const { cpf, password } = request.body;
+  const { cpf_Usuario, senha_Usuario } = request.body;
 
   const authenticateUser = container.resolve(AuthenticateUserService);
-  const { user, token } = await authenticateUser.execute({ cpf, password });
-  delete user.password;
+  const { usuario, token } = await authenticateUser.execute({ cpf_Usuario, senha_Usuario });
+  delete usuario.senha_Usuario;
 
-  return response.json({ user, token });
+  return response.json({ usuario, token });
 });
 
 export default sessionsRouter;

@@ -1,28 +1,31 @@
 import { Router } from 'express';
 import { getRepository } from 'typeorm';
-import User from '../models/User';
+import { Response, Request } from 'express';
+
+import Usuario from '../models/Usuario';
 
 import CreateUserService from '../services/CreateUserService';
-import DeleteUserService from '../services/DeleteUserService';
 
 
+import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 const usersRouter = Router();
 
-
-usersRouter.get('/', async (request, response) => {
-  const usersRepositorie = getRepository(User);
+//Lista os usuarios cadastrados
+usersRouter.get('/',ensureAuthenticated, async (request:Request, response:Response) => {
+  const usersRepositorie = getRepository(Usuario);
   const users = await usersRepositorie.find();
 
   return response.json(users);
 });
 
-usersRouter.post('/', async (request, response) => {
-  const { name, cpf, rg, password } = request.body;
+//Cadastra um novo usuario
+usersRouter.post('/',async (request: Request, response:Response) => {
+  const { nome_Usuario, cpf_Usuario, rg_Usuario, senha_Usuario } = request.body;
   const createUser = new CreateUserService();
-  const user = await createUser.execute({
-    name, cpf, rg, password,
+  const usuario = await createUser.execute({
+    nome_Usuario, cpf_Usuario, rg_Usuario, senha_Usuario
   });
-  return response.json(user);
+  return response.json(usuario);
 });
 
 

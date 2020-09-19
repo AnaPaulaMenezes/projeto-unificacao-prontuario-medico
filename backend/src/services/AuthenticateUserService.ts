@@ -2,38 +2,38 @@ import { sign } from 'jsonwebtoken';
 import authConfig from '../config/auth';
 import { getRepository } from 'typeorm';
 import AppError from '../errors/AppError';
-import User from '../models/User';
+import Usuario from '../models/Usuario';
 import { compare } from 'bcryptjs';
 
 
 
 interface IRequest {
-  cpf: string;
-  password: string;
+  cpf_Usuario: string;
+  senha_Usuario: string;
 }
 interface IResponse {
-  user: User;
+  usuario: Usuario;
   token: string;
 }
 
 class AuthenticateUserService {
-  async execute({ cpf, password }: IRequest): Promise<IResponse> {
-    const usersRepository = getRepository(User);
+  async execute({ cpf_Usuario, senha_Usuario }: IRequest): Promise<IResponse> {
+    const usersRepository = getRepository(Usuario);
 
-    const user = await usersRepository.findOne({where: {
-      cpf,
+    const usuario = await usersRepository.findOne({where: {
+      cpf_Usuario,
     }});
 
 
 
-    if (!user) {
+    if (!usuario) {
 
       throw new AppError('Incorrect cpf/password combination', 401);
     }
 
     const passwordMatched = await compare(
-      password,
-      user.password,
+      senha_Usuario,
+      usuario.senha_Usuario,
     );
 
     if (!passwordMatched) {
@@ -43,12 +43,12 @@ class AuthenticateUserService {
     const { secret, expiresIn } = authConfig.jwt;
 
     const token = sign({}, secret, {
-      subject: user.id,
+      subject: usuario.Id_Usuario.toString(),
       expiresIn,
     });
-    console.log(token)
+
     return {
-      user,
+      usuario,
       token,
     };
   }

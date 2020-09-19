@@ -1,15 +1,11 @@
 import { EntityRepository, Repository } from 'typeorm';
 
-import User from '../models/User';
+import Usuario from '../models/Usuario';
 
-interface Balance {
-  income: number;
-  outcome: number;
-  total: number;
-}
 
-@EntityRepository(User)
-class UsersRepository extends Repository<User> {
+
+@EntityRepository(Usuario)
+class UsersRepository extends Repository<Usuario> {
 
 }
 

@@ -6,20 +6,22 @@ import React, {
   useEffect,
 } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
+
+
 import api from '../api';
 
 interface AuthState {
   token: string;
-  user: object;
+  usuario: object;
 }
 
 interface LogInCredentials {
-  cpf: string;
-  password: string;
+  cpf_Usuario: string;
+  senha_Usuario: string;
 }
 
 interface AuthContextData {
-  user: object;
+  usuario: object;
   loading: boolean;
   logIn(credentials: LogInCredentials): Promise<void>;
   signOut(): void;
@@ -32,39 +34,47 @@ const AuthProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     async function loadStoragedData(): Promise<void> {
-      const [token, user] = await AsyncStorage.multiGet([
+      const [token, usuario] = await AsyncStorage.multiGet([
         '@project:token',
-        '@project:user',
+        '@project:usuario',
       ]);
 
 
-      if (token[1] && user[1]) {
-        setData({ token: token[1], user: JSON.parse(user[1]) });
+      signOut()
+      if (token[1] && usuario[1]) {
+        api.defaults.headers.authorization = `Bearer ${token[1]}`;
+        setData({ token: token[1], usuario: JSON.parse(usuario[1]) });
+
       }
+
       setLoading(false);
     }
     loadStoragedData();
   }, []);
 
-  const logIn = useCallback(async ({ cpf, password }) => {
-    const response = await api.post('sessions', { cpf, password });
-    const { token, user } = response.data;
+  const logIn = useCallback(async ({ cpf_Usuario, senha_Usuario }) => {
+    const response = await api.post('sessions', { cpf_Usuario, senha_Usuario});
+
+    const { token, usuario } = response.data;
+
     await AsyncStorage.multiSet([
       ['@project:token', token],
-      ['@project:user', JSON.stringify(user)],
+      ['@project:usuario', JSON.stringify(usuario)],
     ]);
 
-    setData({ token, user });
+    api.defaults.headers.authorization = `Bearer ${token}`;
+
+    setData({ token, usuario });
   }, []);
 
   const signOut = useCallback(async () => {
-    await AsyncStorage.multiRemove(['@project:user', '@project:token']);
+    await AsyncStorage.multiRemove(['@project:usuario', '@project:token']);
 
     setData({} as AuthState);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, loading, logIn, signOut }}>
+    <AuthContext.Provider value={{ usuario: data.usuario, loading, logIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

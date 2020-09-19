@@ -25,11 +25,11 @@ import Input from '../../components/Input';
 import api from '../../api';
 
 interface SignUpFormatData {
-  name: string;
-  cpf: string;
-  rg: string;
-  email: string;
-  password: string;
+  nome_Usuario: string;
+  cpf_Usuario: string;
+  rg_Usuario: string;
+  email_Usuario: string;
+  senha_Usuario: string;
 }
 
 const SignUp: React.FC = () => {
@@ -47,13 +47,12 @@ const SignUp: React.FC = () => {
       try {
         formRef.current?.setErrors({});
 
-        console.log(data);
         const schema = Yup.object().shape({
-          name: Yup.string().required('Nome obrigatório'),
-          cpf: Yup.string().required('CPF obrigatório'),
-          rg: Yup.string().required('RG obrigatório'),
-          email: Yup.string().email('Digite um e-mail válido'),
-          password: Yup.string().min(6, 'No mínimo 6 digitos'),
+          nome_Usuario: Yup.string().required('Nome obrigatório'),
+          cpf_Usuario: Yup.string().required('CPF obrigatório'),
+          rg_Usuario: Yup.string().required('RG obrigatório'),
+          email_Usuario: Yup.string().email('Digite um e-mail válido'),
+          senha_Usuario: Yup.string().min(6, 'No mínimo 6 digitos'),
         });
 
         await schema.validate(data, {
@@ -61,6 +60,7 @@ const SignUp: React.FC = () => {
         });
 
         await api.post('/users', data);
+
 
         navigation.goBack();
 
@@ -103,7 +103,7 @@ const SignUp: React.FC = () => {
             >
               <Input
                 ref={nameRef}
-                name="name"
+                name="nome_Usuario"
                 autoCapitalize="words"
                 returnKeyType="next"
                 onSubmitEditing={() => {
@@ -116,7 +116,7 @@ const SignUp: React.FC = () => {
                 ref={CPFRef}
                 mask="cpf"
                 maxLength={14}
-                name="cpf"
+                name="cpf_Usuario"
                 keyboardType="numeric"
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -131,7 +131,7 @@ const SignUp: React.FC = () => {
                 ref={RGRef}
                 mask="rg"
                 maxLength={12}
-                name="rg"
+                name="rg_Usuario"
                 autoCorrect={false}
                 autoCapitalize="none"
                 placeholder="RG"
@@ -145,7 +145,7 @@ const SignUp: React.FC = () => {
 
               <Input
                 ref={emailRef}
-                name="email"
+                name="email_Usuario"
                 keyboardType="email-address"
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -157,7 +157,7 @@ const SignUp: React.FC = () => {
               />
 
               <Input
-                name="password"
+                name="senha_Usuario"
                 ref={passwordRef}
                 secureTextEntry
                 textContentType="newPassword"
@@ -178,10 +178,11 @@ const SignUp: React.FC = () => {
             </Form>
           </Container>
         </ScrollView>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
       <ButtonSigIn onPress={() => navigation.goBack()}>
         <Text>Voltar</Text>
       </ButtonSigIn>
+
     </>
   );
 };

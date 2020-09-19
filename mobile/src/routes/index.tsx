@@ -5,9 +5,9 @@ import AuthRoutes from './auth.routes';
 import AppRoutes from './app.routes';
 
 const Routes: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { usuario, loading } = useAuth();
 
-  return user ? <AppRoutes /> : <AuthRoutes />;
+  return usuario ? <AppRoutes /> : <AuthRoutes />;
 };
 
 export default Routes;

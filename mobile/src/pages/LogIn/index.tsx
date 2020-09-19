@@ -25,8 +25,8 @@ import {
 } from './styles';
 
 interface LogInFormData {
-  cpf: string;
-  password: string;
+  cpf_Usuario: string;
+  senha_Usuario: string;
 }
 
 const LogIn: React.FC = () => {
@@ -39,22 +39,23 @@ const LogIn: React.FC = () => {
 
   const handleSubmit = useCallback(
     async (data: LogInFormData) => {
-      console.log('data', data);
+
       try {
         formRef.current?.setErrors({});
         const schema = Yup.object().shape({
-          cpf: Yup.string().required('CPF obrigatório'),
+          cpf_Usuario: Yup.string().required('CPF obrigatório'),
 
-          password: Yup.string().required('Senha obrigatória'),
+          senha_Usuario: Yup.string().required('Senha obrigatória'),
         });
         await schema.validate(data, {
           abortEarly: false,
         });
 
-        await logIn({
-          cpf: data.cpf,
-          password: data.password,
+         await logIn({
+          cpf_Usuario: data.cpf_Usuario,
+          senha_Usuario: data.senha_Usuario,
         });
+
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -67,6 +68,7 @@ const LogIn: React.FC = () => {
           'Ocorreu erro ao fazer login, cheque as credenciais',
         );
       }
+
     },
     [logIn, navigation],
   );
@@ -92,7 +94,7 @@ const LogIn: React.FC = () => {
             >
               <Input
                 ref={cpfInputRef}
-                name="cpf"
+                name="cpf_Usuario"
                 mask="cpf"
                 maxLength={14}
                 placeholder="CPF"
@@ -106,7 +108,7 @@ const LogIn: React.FC = () => {
               />
               <Input
                 ref={passwordInputRef}
-                name="password"
+                name="senha_Usuario"
                 placeholder="Senha"
                 secureTextEntry
                 returnKeyType="send"
