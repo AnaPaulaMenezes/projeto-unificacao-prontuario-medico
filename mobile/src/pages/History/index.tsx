@@ -4,6 +4,7 @@ import { Form } from '@unform/mobile';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import logoImg from '../../assets/logo.png';
+
 import {
   Container,
   ButtonSigIn,
@@ -26,7 +27,7 @@ const History: React.FC = () => {
 
     <>
       <Container>
-        <Text>Bem Vindo!</Text>
+        <Title>Bem Vindo!</Title>
       </Container>
     </>
   );
