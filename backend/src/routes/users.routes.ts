@@ -7,6 +7,7 @@ import CreateUserService from '../services/CreateUserService';
 import UpdateUserService from '../services/UpdateUserService';
 import CreateEnderecoService from '../services/CreateEnderecoService';
 import UpdateEnderecoService from '../services/UpdateEnderecoService';
+import UpdatePacienteService from '../services/UpdatePacienteService';
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
 
@@ -49,8 +50,6 @@ usersRouter.put('/',ensureAuthenticated, async (request:Request, response:Respon
 
   return response.json(usuario);
 });
-
-
 
 //Cadastra um novo endereco
 usersRouter.post('/endereco',ensureAuthenticated, async (request: Request, response:Response) => {
@@ -110,5 +109,34 @@ usersRouter.put('/endereco',ensureAuthenticated, async (request: Request, respon
     complemento_Endereco
   });
   return response.json(endereco);
+});
+
+//Editar dados clinicos do paciente
+
+usersRouter.put('/paciente',ensureAuthenticated, async (request: Request, response:Response) => {
+  const {
+    Id_Paciente,
+    tipoSanguineo_Paciente,
+    altura_Paciente,
+    peso_Paciente,
+    obs_Paciente,
+    alergias_Paciente,
+    doencasCronicas_Paciente,
+    remediosContinuos_Paciente
+  } = request.body;
+
+
+  const updatePacienteService = new UpdatePacienteService();
+  const paciente = await updatePacienteService.execute({
+    Id_Paciente,
+    tipoSanguineo_Paciente,
+    altura_Paciente,
+    peso_Paciente,
+    obs_Paciente,
+    alergias_Paciente,
+    doencasCronicas_Paciente,
+    remediosContinuos_Paciente
+  });
+  return response.json(paciente);
 });
 export default usersRouter;

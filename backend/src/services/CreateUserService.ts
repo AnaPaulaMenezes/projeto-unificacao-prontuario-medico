@@ -1,5 +1,6 @@
 import {getRepository, getConnection} from 'typeorm';
 import Usuario from '../models/Usuario';
+import Paciente from '../models/Paciente';
 
 import {hash} from 'bcryptjs';
 import AppError from '../errors/AppError';
@@ -19,6 +20,7 @@ class CreateUser{
   public async execute({nome_Usuario, cpf_Usuario, rg_Usuario, senha_Usuario, email_Usuario }: IRequest): Promise<Usuario> {
     const userRepositorie = getRepository(Usuario);
 
+
     const userExists = await userRepositorie.find({where:{cpf_Usuario}});
 
     const dataAtual = new Date()
@@ -27,12 +29,8 @@ class CreateUser{
       throw new AppError('Invalid CPF', 401);
     }
 
-
-
-
-
     const hashedPassword = await hash(senha_Usuario,8);
-    const newUser = userRepositorie.create({nome_Usuario, cpf_Usuario,rg_Usuario , senha_Usuario: hashedPassword, dtCriacao_Usuario: dataAtual, dtAlteracao_Usuario:dataAtual, emails: email_Usuario});
+    const newUser = userRepositorie.create({nome_Usuario, cpf_Usuario,rg_Usuario , senha_Usuario: hashedPassword, dtCriacao_Usuario: dataAtual, dtAlteracao_Usuario:dataAtual, emails: email_Usuario,paciente:{}});
     await userRepositorie.save(newUser);
 
     return newUser;

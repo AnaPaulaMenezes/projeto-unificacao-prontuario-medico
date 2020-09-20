@@ -6,8 +6,10 @@ import {
 } from 'typeorm';
 import Email from './Email';
 import Telefone from './Telefone';
-import { Exclude, Expose } from 'class-transformer';
 import Endereco from './Endereco';
+import Paciente from './Paciente';
+import { Exclude } from 'class-transformer';
+
 
 
 @Entity('Usuario')
@@ -44,8 +46,10 @@ class Usuario {
   telefones: Telefone[];
 
   @OneToOne(type => Endereco, endereco => endereco.user, {cascade: true, eager:true})
-
   endereco: Endereco;
+
+  @OneToOne(type => Paciente, paciente => paciente.user, {cascade: true, eager:true})
+  paciente: Paciente;
 }
 
 export default Usuario;

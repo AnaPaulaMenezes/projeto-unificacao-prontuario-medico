@@ -43,7 +43,7 @@ class Endereco {
   Id_Usuario: number;
 
   @OneToOne(type => Usuario, usuario => usuario.endereco)
-  @JoinColumn({ name: 'id_Usuario' })
+  @JoinColumn({ name: 'Id_Usuario' })
   user: Usuario;
 
   @CreateDateColumn()
