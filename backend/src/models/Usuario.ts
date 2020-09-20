@@ -2,11 +2,12 @@ import {
   Entity,
   Column,
   CreateDateColumn,
-  UpdateDateColumn, PrimaryColumn, PrimaryGeneratedColumn, OneToMany,JoinColumn
+  UpdateDateColumn, PrimaryColumn, PrimaryGeneratedColumn, OneToMany,JoinColumn, OneToOne
 } from 'typeorm';
 import Email from './Email';
 import Telefone from './Telefone';
 import { Exclude, Expose } from 'class-transformer';
+import Endereco from './Endereco';
 
 
 @Entity('Usuario')
@@ -41,6 +42,10 @@ class Usuario {
 
   @OneToMany(type => Telefone, telefone => telefone.user, {cascade: true, eager:true})
   telefones: Telefone[];
+
+  @OneToOne(type => Endereco, endereco => endereco.user, {cascade: true, eager:true})
+
+  endereco: Endereco;
 }
 
 export default Usuario;
