@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getRepository } from 'typeorm';
 import { Response, Request } from 'express';
+import { classToClass } from 'class-transformer';
 
 import Usuario from '../models/Usuario';
 
@@ -13,10 +14,11 @@ const usersRouter = Router();
 
 //Lista os usuarios cadastrados
 usersRouter.get('/',ensureAuthenticated, async (request:Request, response:Response) => {
+  const Id_Usuario = request.user.id
   const usersRepositorie = getRepository(Usuario);
-  const users = await usersRepositorie.find();
+  const users = await usersRepositorie.find({where:{Id_Usuario}});
 
-  return response.json(users);
+  return response.json(classToClass(users));
 });
 
 //Cadastra um novo usuario
@@ -31,17 +33,18 @@ usersRouter.post('/',async (request: Request, response:Response) => {
 
 //Editar usuario
 usersRouter.put('/',ensureAuthenticated, async (request:Request, response:Response) => {
-  const { nome_Usuario, senha_Usuario, novaSenha_Usuario, telefone_Usuario,  email_Usuario } = request.body;
+  const { nome_Usuario, senha_Usuario, novaSenha_Usuario, telefone_Usuario,  email_Usuario,dtNascimento_Usuario } = request.body;
   const Id_Usuario = Number(request.user.id);
 
   const updateUser = new UpdateUserService();
   const usuario = await updateUser.execute({
     Id_Usuario,
     nome_Usuario,
+    dtNascimento_Usuario,
     senha_Usuario,
     novaSenha_Usuario,
     telefone_Usuario,
-    email_Usuario
+    email_Usuario,
   })
 
   return response.json(usuario);

@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import {
   Entity,
   Column,
@@ -20,6 +21,7 @@ class Email {
 
   @Column()
   Id_Usuario: number;
+
 
   @ManyToOne(() => Usuario, {onDelete: "CASCADE", onUpdate:"CASCADE"})
   @JoinColumn({ name: 'Id_Usuario' })

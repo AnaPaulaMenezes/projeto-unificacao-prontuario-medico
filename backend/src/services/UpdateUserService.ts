@@ -8,6 +8,7 @@ import Telefone from '../models/Telefone';
 interface IRequest{
   Id_Usuario:number;
   nome_Usuario: string;
+  dtNascimento_Usuario?: Date;
   senha_Usuario?: string;
   novaSenha_Usuario?: string;
   email_Usuario?: Email[];
@@ -20,12 +21,13 @@ class UpdateUser{
 
   public async execute({Id_Usuario,
     nome_Usuario,
+    dtNascimento_Usuario,
     senha_Usuario,
     email_Usuario,
     novaSenha_Usuario,
     telefone_Usuario, }: IRequest): Promise<Usuario> {
     const userRepositorie = getRepository(Usuario);
-    const emailRepositorie = getRepository(Email);
+
     const usuario = await userRepositorie.findOne({where:{Id_Usuario}});
 
     const dataAtual = new Date();
@@ -36,6 +38,9 @@ class UpdateUser{
 
     usuario.nome_Usuario = nome_Usuario;
     usuario.dtAlteracao_Usuario = dataAtual;
+    if(dtNascimento_Usuario){
+      usuario.dtNascimento_Usuario = dtNascimento_Usuario;
+    }
 
     if(email_Usuario){
       usuario.emails = email_Usuario
@@ -60,7 +65,7 @@ class UpdateUser{
       if (!checkOldPassword) {
         throw new AppError('Senha incorreta');
       }
-      usuario.senha_Usuario = await hash(senha_Usuario,8);
+      usuario.senha_Usuario = await hash(novaSenha_Usuario,8);
     }
 
 
