@@ -25,7 +25,9 @@ class UpdateUser{
     novaSenha_Usuario,
     telefone_Usuario, }: IRequest): Promise<Usuario> {
     const userRepositorie = getRepository(Usuario);
+    const emailRepositorie = getRepository(Email);
     const usuario = await userRepositorie.findOne({where:{Id_Usuario}});
+
     const dataAtual = new Date();
 
     if (!usuario){
@@ -35,10 +37,8 @@ class UpdateUser{
     usuario.nome_Usuario = nome_Usuario;
     usuario.dtAlteracao_Usuario = dataAtual;
 
-    /* Fazer validação para alterar de acordo com o id */
     if(email_Usuario){
       usuario.emails = email_Usuario
-
     }
 
     if(telefone_Usuario){
@@ -58,7 +58,7 @@ class UpdateUser{
       );
 
       if (!checkOldPassword) {
-        throw new AppError('As senhas não correspondem');
+        throw new AppError('Senha incorreta');
       }
       usuario.senha_Usuario = await hash(senha_Usuario,8);
     }
