@@ -10,13 +10,13 @@ import {
 
 import Usuario from './Usuario';
 
-@Entity('Email')
-class Email {
+@Entity('Telefone')
+class Telefone {
   @PrimaryGeneratedColumn()
-  id_Email: number;
+  Id_Telefone: number;
 
   @Column()
-  endereco_Email: string;
+  numero_Telefone: string;
 
   @Column()
   Id_Usuario: number;
@@ -26,14 +26,13 @@ class Email {
   user: Usuario;
 
   @CreateDateColumn()
-  dtCriacao_Email: Date;
+  dtCriacao_Telefone: Date;
 
   @UpdateDateColumn()
-  dtAlteracao_Email: Date;
-
+  dtAlteracao_Telefone: Date;
 
   @Column()
-  codTipo_Email: number;
+  codTipo_Telefone: number;
 }
 
-export default Email;
+export default Telefone;

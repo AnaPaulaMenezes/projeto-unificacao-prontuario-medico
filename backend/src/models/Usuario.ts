@@ -5,6 +5,7 @@ import {
   UpdateDateColumn, PrimaryColumn, PrimaryGeneratedColumn, OneToMany,JoinColumn
 } from 'typeorm';
 import Email from './Email';
+import Telefone from './Telefone';
 
 
 @Entity('Usuario')
@@ -35,6 +36,9 @@ class Usuario {
 
   @OneToMany(type => Email, email => email.user, {cascade: true})
   emails: Email[];
+
+  @OneToMany(type => Telefone, telefone => telefone.user, {cascade: true})
+  telefones: Telefone[];
 }
 
 export default Usuario;
