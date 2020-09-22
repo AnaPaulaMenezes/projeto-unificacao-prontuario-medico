@@ -8,7 +8,9 @@ import React, {
 import AsyncStorage from '@react-native-community/async-storage';
 
 
+
 import api from '../api';
+import { create } from 'react-test-renderer';
 
 interface AuthState {
   token: string;
@@ -40,7 +42,7 @@ const AuthProvider: React.FC = ({ children }) => {
       ]);
 
 
-      signOut()
+
       if (token[1] && usuario[1]) {
         api.defaults.headers.authorization = `Bearer ${token[1]}`;
         setData({ token: token[1], usuario: JSON.parse(usuario[1]) });

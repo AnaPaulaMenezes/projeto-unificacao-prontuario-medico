@@ -1,15 +1,24 @@
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, {useContext} from 'react';
+import {createDrawerNavigator } from '@react-navigation/drawer';
 import History from '../pages/History';
+import Profile from '../pages/Profile';
+import Detalhes from '../pages/Details';
 
-const App = createStackNavigator();
+
+const AppDrawer = createDrawerNavigator();
+
+
 const AppRoutes: React.FC = () => (
-  <App.Navigator
-    screenOptions={{
-      headerShown: false,
-    }}
-  >
-    <App.Screen name="History" component={History} />
-  </App.Navigator>
+
+  <AppDrawer.Navigator>
+
+    <AppDrawer.Screen name="Histórico" component={History} />
+    <AppDrawer.Screen name="Usuario" component={Profile} />
+    <AppDrawer.Screen name="Detalhes" component={Detalhes} />
+
+
+
+  </AppDrawer.Navigator>
+
 );
 export default AppRoutes;
