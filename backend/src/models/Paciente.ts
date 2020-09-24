@@ -3,9 +3,10 @@ import {
   Entity,
   Column,
   CreateDateColumn,
-  UpdateDateColumn, PrimaryColumn, PrimaryGeneratedColumn, OneToMany,JoinColumn, OneToOne
+  UpdateDateColumn, PrimaryGeneratedColumn, OneToMany,JoinColumn, OneToOne
 } from 'typeorm';
 import Usuario from './Usuario';
+import Consulta from './Consulta';
 
 
 @Entity('Paciente')
@@ -46,6 +47,9 @@ class Paciente {
 
   @UpdateDateColumn()
   dtAlteracao_Paciente: Date;
+
+  @OneToMany(type => Consulta, consulta => consulta.paciente)
+  consultas: Consulta[];
 
 
 }
