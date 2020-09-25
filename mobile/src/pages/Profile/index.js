@@ -24,6 +24,7 @@ export default function Perfil() {
             <View style={styles.info}>
               <Text>Nome: Lucas</Text>
               <Text>Cidade: Macapá</Text>
+              <Text>Cidade: Macapá2</Text>
             </View>
           </View>
           <View style={styles.dm}>
