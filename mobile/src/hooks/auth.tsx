@@ -41,7 +41,7 @@ const AuthProvider: React.FC = ({ children }) => {
         '@project:usuario',
       ]);
 
-
+//signOut()
 
       if (token[1] && usuario[1]) {
         api.defaults.headers.authorization = `Bearer ${token[1]}`;

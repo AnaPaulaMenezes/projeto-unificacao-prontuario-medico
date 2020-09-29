@@ -28,7 +28,10 @@ interface SignUpFormatData {
   nome_Usuario: string;
   cpf_Usuario: string;
   rg_Usuario: string;
-  email_Usuario: string;
+  email_Usuario: [{
+    endereco_Email: string,
+		codTipo_Email: number,
+  }];
   senha_Usuario: string;
 }
 
@@ -59,8 +62,15 @@ const SignUp: React.FC = () => {
           abortEarly: false,
         });
 
-        await api.post('/users', data);
-
+        if (data.email_Usuario){
+          const newData = {...data, email_Usuario:[{
+            endereco_Email: data.email_Usuario,
+            codTipo_Email: 1
+          }]}
+          await api.post('/users', newData);
+        }else{
+          await api.post('/users', data);
+        }
 
         navigation.goBack();
 
@@ -79,7 +89,7 @@ const SignUp: React.FC = () => {
           'Erro ao cadastrar',
           'Ocorreu um erro ao fazer cadastro, tente novamente.',
         );
-        console.log(err.message);
+
       }
     },
     [navigation],
