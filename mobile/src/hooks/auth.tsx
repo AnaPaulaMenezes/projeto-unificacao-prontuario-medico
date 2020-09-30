@@ -6,11 +6,9 @@ import React, {
   useEffect,
 } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-
-
-
 import api from '../api';
-import { create } from 'react-test-renderer';
+import {Alert} from 'react-native';
+
 
 interface AuthState {
   token: string;
@@ -34,6 +32,20 @@ const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>({} as AuthState);
   const [loading, setLoading] = useState(true);
 
+  api.interceptors.response.use((response) => {
+
+    return response
+  }, async function (error) {
+
+    if (error.response.status === 401 ) {
+      Alert.alert('Sessão expirada', 'Favor refaça seu Login');
+      signOut();
+      return console.error();
+      ;
+    }
+    return Promise.reject(error);
+  });
+
   useEffect(() => {
     async function loadStoragedData(): Promise<void> {
       const [token, usuario] = await AsyncStorage.multiGet([
@@ -41,17 +53,16 @@ const AuthProvider: React.FC = ({ children }) => {
         '@project:usuario',
       ]);
 
-//signOut()
-
       if (token[1] && usuario[1]) {
         api.defaults.headers.authorization = `Bearer ${token[1]}`;
         setData({ token: token[1], usuario: JSON.parse(usuario[1]) });
-
       }
 
       setLoading(false);
     }
     loadStoragedData();
+
+
   }, []);
 
   const logIn = useCallback(async ({ cpf_Usuario, senha_Usuario }) => {
