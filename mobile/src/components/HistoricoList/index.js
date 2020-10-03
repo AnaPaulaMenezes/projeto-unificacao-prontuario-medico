@@ -12,18 +12,18 @@ export default function HistoricoList({data}) {
         <Stats>
           <Stat>
           <Icon name="doctor" size={10} color="#fff"/>
-          <Title>{data.tipo}</Title>
+          <Title>{data.nome_Usuario}</Title>
           </Stat>
           <Stat>
           <Icon name="calendar" size={10} color="#fff"/>
-          <Title>{data.data}</Title>
+          <Title></Title>
           </Stat>
         </Stats>
-       <Nome>{data.nome}</Nome>
+       <Nome></Nome>
 
        <Descricao
        onPress={() => navigation.navigate('Detalhes')}
-       >{data.desc}</Descricao>
+       >{data.Id_Usuario}</Descricao>
       </Container>
 
     );

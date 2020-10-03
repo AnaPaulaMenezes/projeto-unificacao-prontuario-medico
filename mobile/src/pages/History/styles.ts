@@ -6,8 +6,8 @@ import { Component } from 'react';
 
 export const Container = styled(LinearGradient).attrs({
   colors:['#A0C9D9','#e1e5e6'],
-  start:{ x:0, y:0},
-  end:{x:1,y:1},
+  start:{ x:0, y:1},
+  end:{x:0,y:0},
 })`
   flex: 1;
 
