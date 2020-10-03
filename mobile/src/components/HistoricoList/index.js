@@ -5,25 +5,25 @@ import{useNavigation, NavigationContainer} from '@react-navigation/native';
 
  import { Container, Nome, Stats, Stat,Title, Descricao } from './styles';
 
-export default function HistoricoList({data}) {
+export default function HistoricoList({ data }) {
   const navigation = useNavigation();
   return (
       <Container>
         <Stats>
           <Stat>
           <Icon name="doctor" size={10} color="#fff"/>
-          <Title>{data.nome_Usuario}</Title>
+          <Title>{ data.descricao_Exame }</Title>
           </Stat>
           <Stat>
           <Icon name="calendar" size={10} color="#fff"/>
-          <Title></Title>
+          <Title>{data.dtAlteracao_Exame}</Title>
           </Stat>
         </Stats>
        <Nome></Nome>
 
        <Descricao
        onPress={() => navigation.navigate('Detalhes')}
-       >{data.Id_Usuario}</Descricao>
+       >{ data.descricao_Exame }</Descricao>
       </Container>
 
     );

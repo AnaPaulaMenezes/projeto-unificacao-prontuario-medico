@@ -18,18 +18,21 @@ import api from '../../api';
 console.disableYellowBox=true;
 
 interface dados{
-  Id_Usuario: number;
-  nome_Usuario:string;
+  Id_Exame: number;
+  descricao_Exame:string;
+  dtAlteracao_Exame:string;
 };
+
 
 const History: React.FC = () => {
 
-  const [user, setUser] = useState<dados>({} as dados);
+  const [consulta, setConsulta] = useState<dados>({} as dados);
 
   const navigation = useNavigation();
   useEffect(()=>{
-    api.get('users').then((response) =>{
-    setUser(response.data);
+    api.get('exames').then((response) =>{
+    setConsulta(response.data);
+    console.log(response.data);
     })
   })
   return (
@@ -46,8 +49,8 @@ const History: React.FC = () => {
          </Form>
         <List
         keyboardShouldPeristTaps="handled"
-        data={user}
-        keyExtractor={item => item.Id_Usuario}
+        data={consulta}
+        keyExtractor={item => item.Id_Exame}
         renderItem={({item})=> <HistoricoList data={item}/>}
         >
         </List>

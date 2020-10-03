@@ -1,40 +1,60 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {useNavigation, NavigationContainer } from '@react-navigation/native';
 import {Container, Nome, NewLink, NewText, Logout, LogoutText} from './styles';
 import Icon from 'react-native-vector-icons/AntDesign'
 import { StyleSheet, View, Text, SafeAreaView, Image, ScrollView} from "react-native";
 import Header from '../../components/Header';
+import api from '../../api';
 
-export default function Perfil() {
+interface dados{
+  Id_Usuario: number;
+  nome_Usuario:string;
+  cpf_Usuario:string;
+};
+
+const Perfil: React.FC = () =>{
+
+
+  const [user, setUser] = useState<dados>({} as dados);
+
   const navigation = useNavigation();
- return (
-      <SafeAreaView style={styles.container}>
-        <Header/>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {/* <View style={styles.titleBar}>
-            <Icon name="arrowleft" size={40} color="#52575D"></Icon>
-          </View> */}
-          <View style={{alignSelf: "center"}}>
-            <View style={styles.profileImage}>
-              <Image source={require("./assets/profile.jpg")} style={styles.image} resizeMode="center"></Image>
-            </View>
-          </View> 
-          <View style={{alignSelf: "center"}}>
-            <Text style={styles.text}> Dados Pessoais</Text>
-            <View style={styles.info}>
-              <Text>Nome: Lucas</Text>
-              <Text>Cidade: Macapá</Text>
-              <Text>Cidade: Macapá2</Text>
-            </View>
+  useEffect(()=>{
+    api.get('user').then((response) =>{
+    setUser(response.data[0]);
+    })
+  })
+console.log(user);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Header/>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* <View style={styles.titleBar}>
+          <Icon name="arrowleft" size={40} color="#52575D"></Icon>
+        </View> */}
+        <View style={{alignSelf: "center"}}>
+          <View style={styles.profileImage}>
+            <Image source={require("./assets/profile.jpg")} style={styles.image} resizeMode="center"></Image>
           </View>
-          <View style={styles.dm}>
-              <Icon name="edit" size={24} color="#FFF"></Icon>
+        </View>
+        <View style={{alignSelf: "center"}}>
+          <Text style={styles.text}> Dados Pessoais</Text>
+          <View style={styles.info}>
+          <Text>nome:{user.nome_Usuario} </Text>
+            <Text>Cidade: Macapá</Text>
+            <Text>Cidade: Macapá2</Text>
           </View>
-        </ScrollView>
-      </SafeAreaView>
+        </View>
+        <View style={styles.dm}>
+            <Icon name="edit" size={24} color="#FFF"></Icon>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
 
   );
 }
+
+export default Perfil;
 
 const styles = StyleSheet.create({
   container: {
@@ -67,7 +87,7 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 100,
     overflow: "hidden"
- 
+
   },
 
   circle: {
@@ -77,7 +97,7 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: "white",
     marginBottom:10,
-    
+
   },
 
   dm: {
