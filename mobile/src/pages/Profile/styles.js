@@ -1,12 +1,16 @@
 import styled from 'styled-components/native';
+import LinearGradient from 'react-native-linear-gradient';
 
 
 
-export const Container = styled.View`
-flex:1;
-background-color: #DDD;
-align-items: center;
-`;
+export const Container = styled(LinearGradient).attrs({
+    colors:['#A0C9D9','#e1e5e6'],
+    start:{ x:0, y:1},
+    end:{x:0,y:0},
+  })`
+    flex: 1;
+  
+  `;
 export const Nome = styled.Text`
 text-align: center;
 font-size:28px;
