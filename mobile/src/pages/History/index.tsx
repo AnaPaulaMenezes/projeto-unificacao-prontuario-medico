@@ -18,9 +18,11 @@ import api from '../../api';
 console.disableYellowBox=true;
 
 interface dados{
-  Id_Exame: number;
-  descricao_Exame:string;
-  dtAlteracao_Exame:string;
+  Id_Consulta: number;
+  diagnostico_Consulta:string;
+  dtAlteracao_Consulta:string;
+  sintomasPaciente_Consulta:string;
+  Id_Usuario:number;
 };
 
 
@@ -30,11 +32,17 @@ const History: React.FC = () => {
 
   const navigation = useNavigation();
   useEffect(()=>{
-    api.get('exames').then((response) =>{
+    api.get('consultas').then((response) =>{
     setConsulta(response.data);
-    console.log(response.data);
     })
-  })
+  }, [])
+
+  function handleItem(data){
+    api.get('consultas/'+ data.Id_Consulta).then((response) =>{
+    navigation.navigate('Detalhes');
+    })
+
+  }
   return (
 
     <>
@@ -43,15 +51,15 @@ const History: React.FC = () => {
         <Header/>
         <Form>
           <Nome>Consultas</Nome>
-          <NewLink onPress={()=>{}}>
+          <NewLink onPress={()=>{navigation.navigate('Cadastro')}}>
               <Icon name="add" color="#fff" size={20} ></Icon>
             </NewLink>
          </Form>
         <List
         keyboardShouldPeristTaps="handled"
         data={consulta}
-        keyExtractor={item => item.Id_Exame}
-        renderItem={({item})=> <HistoricoList data={item}/>}
+        keyExtractor={item => item.Id_Consulta.toString()}
+        renderItem={({item})=> (<HistoricoList data={item} selectItem={handleItem} /> )}
         >
         </List>
 

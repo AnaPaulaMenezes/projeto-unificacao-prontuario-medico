@@ -9,11 +9,11 @@ import History from '../History';
 
 console.disableYellowBox=true;
 
-
-
-
   interface dados{
     Id_Consulta: number;
+    diagnostico_Consulta:string;
+    receita_Consulta:string;
+    especialidade_Consulta:string;
     sintomasPaciente_Consulta:string;
     dtAlteracao_Consulta:string;
   };
@@ -21,15 +21,18 @@ console.disableYellowBox=true;
 
 const Detail: React.FC = () => {
 
+
   const [user, setUser] = useState<dados>({} as dados);
 
   const navigation = useNavigation();
   useEffect(()=>{
-    api.get('exames').then((response) =>{
+    api.get('consultas').then((response) =>{
     setUser(response.data);
     })
   })
-console.log(user);
+
+
+
   return(
     <Container>
       <Header/>
@@ -39,8 +42,8 @@ console.log(user);
       <List
       keyboardShouldPeristTaps="handled"
       data={user}
-      keyExtractor={item => item.Id_Exame}
-      renderItem={({item})=> <Detalhes data={item}/>}
+      keyExtractor={item => item.Id_Consulta}
+      renderItem={({item})=> ( <Detalhes data={item}/> )}
       >
       </List>
     </Container>
