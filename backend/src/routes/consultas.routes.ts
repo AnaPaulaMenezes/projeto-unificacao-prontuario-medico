@@ -19,12 +19,24 @@ consultasRouter.get('/',ensureAuthenticated, async (request:Request, response:Re
   if (p.length> 0) {
     const consultasRepositorie = getRepository(Consulta);
     const consultas = await consultasRepositorie.find({where:{Id_Paciente: p[0].Id_Paciente}});
-    console.log(consultas)
+
     return response.json(classToClass(consultas));
   }else {
     return response.json('User not found');
   }
 
+});
+
+
+//Lista uma consulta especifica
+consultasRouter.get('/:Id_Consulta',ensureAuthenticated, async (request:Request, response:Response) => {
+  const {Id_Consulta} = request.params;
+
+  const consultasRepositorie = getRepository(Consulta);
+  const consulta = await consultasRepositorie.find({where:{Id_Consulta}});
+
+
+  return response.json(classToClass(consulta));
 });
 
 //Cadastra uma nova consulta
