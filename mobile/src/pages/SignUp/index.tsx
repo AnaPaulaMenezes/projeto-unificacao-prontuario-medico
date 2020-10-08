@@ -20,7 +20,7 @@ import {
 } from './styles';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
-import {validarCPF} from '../../utils/validarCPF';
+import { validarCPF } from '../../utils/validarCPF';
 
 
 import api from '../../api';
@@ -31,7 +31,7 @@ interface SignUpFormatData {
   rg_Usuario: string;
   email_Usuario: [{
     endereco_Email: string,
-		codTipo_Email: number,
+    codTipo_Email: number,
   }];
   senha_Usuario: string;
 }
@@ -65,18 +65,20 @@ const SignUp: React.FC = () => {
 
         const validateCPF = validarCPF(data.cpf_Usuario);
 
-        if (!validateCPF){
+        if (!validateCPF) {
 
           throw new Error('CPF Inválido');
         }
 
-        if (data.email_Usuario){
-          const newData = {...data, email_Usuario:[{
-            endereco_Email: data.email_Usuario,
-            codTipo_Email: 1
-          }]}
+        if (data.email_Usuario) {
+          const newData = {
+            ...data, email_Usuario: [{
+              endereco_Email: data.email_Usuario,
+              codTipo_Email: 1
+            }]
+          }
           await api.post('/users', newData);
-        }else{
+        } else {
           await api.post('/users', data);
         }
 
@@ -196,7 +198,7 @@ const SignUp: React.FC = () => {
             </Form>
           </Container>
         </ScrollView>
-        </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
       <ButtonSigIn onPress={() => navigation.goBack()}>
         <Text>Voltar</Text>
       </ButtonSigIn>
