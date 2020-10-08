@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useCallback, useRef} from 'react';
-import { Picker , ScrollView} from 'react-native';
+import {  ScrollView} from 'react-native';
 import { Form } from '@unform/mobile';
 import Header from '../../components/Header';
 import Button from '../../components/Button';
@@ -7,7 +7,7 @@ import Input from '../../components/Input';
 import DatePicker from 'react-native-datepicker';
 import { Container, Nome, Cabeca, Items, Item, Texto, Drop} from './styles';
 import api from '../../api';
-//import Pick from '../../components/Picker';
+import Picker, {ListValue} from '../../components/Picker';
 
 interface CadastroConsulta {
   diagnostico_Consulta: string;
@@ -33,41 +33,46 @@ interface estabelecimento{
 
 
 const CadastroConsulta: React.FC = () => {
-
+  const formRef = useRef<FormHandles>(null);
+  const [data, setData]= useState();
+  const [selectedValue, setSelectedValue] = useState("0");
+  const [medicoValues, setMedicoValues] = useState<ListValue[]>([]);
+  const [estabelecimentoValues, setEstabelecimentoValues] = useState<ListValue[]>([]);
 
 
   useEffect(()=>{
     api.get('medicos').then((response) =>{
-    setBringValue(response.data);
-    setSelectedValue("0");
+
+    const formatValues = response.data.map((item:medico)=>{
+      return {
+        id: item.Id_Medico,
+        value: item.nome_Medico,
+      }
     })
 
+     setMedicoValues(formatValues);
+
+    });
+
     api.get('estabelecimentos').then((response) =>{
-      setEstabelecimento(response.data);
+      const formatValues = response.data.map((item:estabelecimento)=>{
+        return {
+          id: item.Id_Estabelecimento,
+          value: item.descricao_Estabelecimento,
+        }
+      })
+
+       setEstabelecimentoValues(formatValues);
     })
   }, [])
 
   const handleConsulta = useCallback(
     async (data: CadastroConsulta)=>{
-      console.log(data);
+
       await api.post('/consultas', data);
 
     },[]);
 
-
-  const formRef = useRef<FormHandles>(null);
-  const [data, setData]= useState();
-  const [selectedValue, setSelectedValue] = useState("0");
-  const [bringValue, setBringValue] = useState<medico[]>([]);
-  const [estabelecimentoValue, setEstabelecimento] = useState<estabelecimento[]>([]);
-
-  let serviceItems = bringValue.map( (s, i) => {
-    return <Picker.Item key={i} value={s.Id_Medico} label={s.nome_Medico}/>
-  });
-
-  let estabelecimentoItems = estabelecimentoValue.map( (s, i) => {
-    return <Picker.Item key={i} value={s.Id_Estabelecimento} label={s.descricao_Estabelecimento} />
-  });
 
   return (
 
@@ -119,22 +124,13 @@ const CadastroConsulta: React.FC = () => {
           ></Input>
         </Item>
         <Item>
-        <Picker>
-            <Picker.Item label="Selecione" value="0"/>
-            {serviceItems}
-          </Picker>
+        <Picker name="medico" values={medicoValues} initialTextValue="Selecione um médico"/>
         </Item>
         <Item>
-          <Picker
-            selectedValue={estabelecimentoValue}
-            onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-            style={{ height: 50, width: 200 }}
-          >
-            {estabelecimentoItems}
-          </Picker>
+        <Picker name="estabelecimento" values={estabelecimentoValues} initialTextValue="Selecione o estabelecimento"/>
         </Item>
-        <Item>
 
+        <Item>
           <Texto>Data</Texto>
           <DatePicker
           style={{width:290}}

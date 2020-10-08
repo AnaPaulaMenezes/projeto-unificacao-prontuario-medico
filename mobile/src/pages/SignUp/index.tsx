@@ -20,6 +20,7 @@ import {
 } from './styles';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
+import {validarCPF} from '../../utils/validarCPF';
 
 
 import api from '../../api';
@@ -61,6 +62,13 @@ const SignUp: React.FC = () => {
         await schema.validate(data, {
           abortEarly: false,
         });
+
+        const validateCPF = validarCPF(data.cpf_Usuario);
+
+        if (!validateCPF){
+
+          throw new Error('CPF Inválido');
+        }
 
         if (data.email_Usuario){
           const newData = {...data, email_Usuario:[{

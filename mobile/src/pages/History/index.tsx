@@ -57,15 +57,9 @@ const History: React.FC = () => {
          </Form>
         <List
         keyboardShouldPeristTaps="handled"
-<<<<<<< HEAD
         data={consulta}
         keyExtractor={item => item.Id_Consulta.toString()}
         renderItem={({item})=> (<HistoricoList data={item} selectItem={handleItem} /> )}
-=======
-        data={user}
-        keyExtractor={item => item.Id_Usuario.toString()}
-        renderItem={({item})=> <HistoricoList data={item}/>}
->>>>>>> 3e1d20881a4f2273a5c63fa65d08cdb6927d3bd1
         >
         </List>
 
