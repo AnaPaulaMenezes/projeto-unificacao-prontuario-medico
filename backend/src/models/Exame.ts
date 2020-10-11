@@ -6,9 +6,10 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn
 } from 'typeorm';
-
+import Exame_Consulta from './Exame_Consulta';
 import Usuario from './Usuario';
 
 @Entity('Exame')
@@ -29,7 +30,8 @@ class Exame {
   @UpdateDateColumn()
   dtAlteracao_Exame: Date;
 
-
+  @OneToMany(type => Exame_Consulta, exame_consulta => exame_consulta.consulta)
+  Exame_consultas: Exame_Consulta[];
 
 
 }

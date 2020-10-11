@@ -9,7 +9,8 @@ import {
   JoinColumn
 } from 'typeorm';
 
-import Usuario from './Usuario';
+import Consulta from './Consulta';
+import Exame from './Exame';
 
 @Entity('Exame_Consulta')
 class Exame_Consulta {
@@ -35,6 +36,14 @@ class Exame_Consulta {
 
   @UpdateDateColumn()
   dtAlteracao_Exame_Consulta: Date;
+
+  @ManyToOne(() => Consulta)
+  @JoinColumn({ name: 'Id_Consulta' })
+  consulta: Consulta;
+
+  @ManyToOne(() => Exame, { eager: true })
+  @JoinColumn({ name: 'Id_Exame' })
+  exame: Exame;
 
 }
 
