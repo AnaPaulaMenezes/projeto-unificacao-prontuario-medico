@@ -15,6 +15,8 @@ const Profile: React.FC = () => {
     Id_Usuario: number;
     nome_Usuario: string;
     logradouro_Endereco: string;
+    emails: string;
+    rg_Usuario: string;
   };
 
   const [user, setUser] = useState<dados>();
@@ -24,6 +26,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     api.get('users').then((response) => {
       setUser(response.data);
+      //console.log(response.data)
     })
   })
 
