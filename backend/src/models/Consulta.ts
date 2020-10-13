@@ -4,12 +4,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
-  ManyToOne,JoinColumn
+  ManyToOne, JoinColumn,
+  OneToMany
 } from 'typeorm';
 
 import Paciente from './Paciente';
 import Medico from './Medico';
 import Estabelecimento from './Estabelecimento';
+import Exame_Consulta from './Exame_Consulta';
 
 
 
@@ -49,18 +51,20 @@ class Consulta {
   @Column()
   Id_Medico: number;
 
-  @ManyToOne(() => Medico, {eager: true})
+  @ManyToOne(() => Medico, { eager: true })
   @JoinColumn({ name: 'Id_Medico' })
   medico: Medico;
 
-  @ManyToOne(() => Paciente, {eager: true})
+  @ManyToOne(() => Paciente, { eager: true })
   @JoinColumn({ name: 'Id_Paciente' })
   paciente: Paciente;
 
-  @ManyToOne(() => Estabelecimento, {eager: true})
+  @ManyToOne(() => Estabelecimento, { eager: true })
   @JoinColumn({ name: 'Id_Estabelecimento' })
   estabelecimento: Estabelecimento;
 
+  @OneToMany(type => Exame_Consulta, exame_consulta => exame_consulta.consulta, { eager: true })
+  Exame_consultas: Exame_Consulta[];
 }
 
 export default Consulta;

@@ -1,52 +1,60 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigation, NavigationContainer } from '@react-navigation/native';
 import { Container, Nome, NewLink, NewText, Logout, LogoutText } from './styles';
 import Icon from 'react-native-vector-icons/AntDesign'
 import { StyleSheet, View, Text, SafeAreaView, Image, ScrollView } from "react-native";
 import Header from '../../components/Header';
 import api from '../../api';
-import { List } from '../History/styles';
-import ProfileInfo from '../../components/UserInfo';
+
+interface dados {
+  Id_Usuario: number;
+  nome_Usuario: string;
+  cpf_Usuario: string;
+};
+
+const Perfil: React.FC = () => {
 
 
-const Profile: React.FC = () => {
-
-  interface dados {
-    Id_Usuario: number;
-    nome_Usuario: string;
-    logradouro_Endereco: string;
-    emails: string;
-    rg_Usuario: string;
-  };
-
-  const [user, setUser] = useState<dados>();
+  const [user, setUser] = useState<dados>({} as dados);
 
   const navigation = useNavigation();
-
   useEffect(() => {
-    api.get('users').then((response) => {
-      setUser(response.data);
-      //console.log(response.data)
+    api.get('user').then((response) => {
+      setUser(response.data[0]);
     })
   })
-
+  console.log(user);
 
   return (
-    <Container>
-      <Header/>
-      <List
-        keyboardShouldPeristTaps="handled"
-        data={user}
-        keyExtractor={item => item.Id_Usuario.toString()}
-        renderItem={({ item }) => <ProfileInfo data={item} />}
-      >
-      </List>
-    </Container>
+    <SafeAreaView style={styles.container}>
+      <Header />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* <View style={styles.titleBar}>
+          <Icon name="arrowleft" size={40} color="#52575D"></Icon>
+        </View> */}
+        <View style={{ alignSelf: "center" }}>
+          <View style={styles.profileImage}>
+            <Image source={require("./assets/profile.jpg")} style={styles.image} resizeMode="center"></Image>
+          </View>
+        </View>
+        <View style={{ alignSelf: "center" }}>
+          <Text style={styles.text}> Dados Pessoais</Text>
+          <View style={styles.info}>
+            <Text>nome:{user.nome_Usuario} </Text>
+            <Text>Cidade: Macapá</Text>
+            <Text>Cidade: Macapá2</Text>
+          </View>
+        </View>
+        <View style={styles.dm}>
+          <Icon name="edit" size={24} color="#FFF"></Icon>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
 
   );
 }
 
-export default Profile;
+export default Perfil;
 
 const styles = StyleSheet.create({
   container: {
@@ -102,6 +110,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
+  },
+
+  text: {
+    fontFamily: "HelveticaNeue",
+    fontSize: 25,
+    color: "#000",
+    textAlign: "center",
+    marginBottom: 30,
+    marginTop: 20,
   },
 
   info: {

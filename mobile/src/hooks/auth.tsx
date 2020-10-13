@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import api from '../api';
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
 
 
 interface AuthState {
@@ -37,7 +37,7 @@ const AuthProvider: React.FC = ({ children }) => {
     return response
   }, async function (error) {
 
-    if (error.response.status === 401 ) {
+    if (error.response.status === 401) {
       Alert.alert('Sessão expirada', 'Favor refaça seu Login');
       signOut();
       return console.error();
@@ -66,7 +66,7 @@ const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   const logIn = useCallback(async ({ cpf_Usuario, senha_Usuario }) => {
-    const response = await api.post('sessions', { cpf_Usuario, senha_Usuario});
+    const response = await api.post('sessions', { cpf_Usuario, senha_Usuario });
 
     const { token, usuario } = response.data;
 

@@ -20,6 +20,7 @@ import {
 } from './styles';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
+import { validarCPF } from '../../utils/validarCPF';
 
 
 import api from '../../api';
@@ -30,7 +31,7 @@ interface SignUpFormatData {
   rg_Usuario: string;
   email_Usuario: [{
     endereco_Email: string,
-		codTipo_Email: number,
+    codTipo_Email: number,
   }];
   senha_Usuario: string;
 }
@@ -62,13 +63,22 @@ const SignUp: React.FC = () => {
           abortEarly: false,
         });
 
-        if (data.email_Usuario){
-          const newData = {...data, email_Usuario:[{
-            endereco_Email: data.email_Usuario,
-            codTipo_Email: 1
-          }]}
+        const validateCPF = validarCPF(data.cpf_Usuario);
+
+        if (!validateCPF) {
+
+          throw new Error('CPF Inválido');
+        }
+
+        if (data.email_Usuario) {
+          const newData = {
+            ...data, email_Usuario: [{
+              endereco_Email: data.email_Usuario,
+              codTipo_Email: 1
+            }]
+          }
           await api.post('/users', newData);
-        }else{
+        } else {
           await api.post('/users', data);
         }
 
@@ -87,7 +97,7 @@ const SignUp: React.FC = () => {
 
         Alert.alert(
           'Erro ao cadastrar',
-          'Ocorreu um erro ao fazer cadastro, tente novamente.',
+          err.message ? err.message : 'Ocorreu um erro ao fazer cadastro, tente novamente.',
         );
 
       }
@@ -188,7 +198,7 @@ const SignUp: React.FC = () => {
             </Form>
           </Container>
         </ScrollView>
-        </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
       <ButtonSigIn onPress={() => navigation.goBack()}>
         <Text>Voltar</Text>
       </ButtonSigIn>

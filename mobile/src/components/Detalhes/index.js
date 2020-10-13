@@ -11,21 +11,25 @@ export default function  Detalhes ({data}) {
 
     <Stat>
       <Icon name="doctor" size={20} color="#fff"/>
-      <Title>{data.consulta}</Title>
+      <Title>{data.diagnostico_Consulta}</Title>
+    </Stat>
+    <Stat>
+      <Icon name="prescription" size={20} color="#fff"/>
+      <Title>{data.receita_Consulta}</Title>
     </Stat>
     <Stat>
       <Icon name="calendar" size={20} color="#fff"/>
-      <Title>{data.data}</Title>
+      <Title>{data.dtAlteracao_Consulta}</Title>
     </Stat>
     <Stat>
       <IconC name="clinic-medical" size={20} color="#fff"/>
-      <Title>{data.clinica}</Title>
+      <Title>{data.especialidade_Consulta}</Title>
     </Stat>
 
     <Descricao
       onPress={() => navigation.navigate('Detalhes')}
     >
-      {data.descricao}
+      {data.sintomasPaciente_Consulta}
     </Descricao>
   </Container>
 
