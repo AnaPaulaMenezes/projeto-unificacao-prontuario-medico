@@ -7,12 +7,15 @@ import Header from '../../components/Header';
 import api from '../../api';
 import { Form, List } from '../History/styles';
 import ProfileInfo from '../../components/UserInfo';
-import HistoricoList from '../../components/HistoricoList';
 
 interface dados {
   Id_Usuario: number;
   nome_Usuario: string;
   cpf_Usuario: string;
+  rg_Usuario: string;
+  email_Usuario: [{
+    endereco_Email: string,
+  }];
 };
 
 const Perfil: React.FC = () => {
@@ -23,18 +26,10 @@ const Perfil: React.FC = () => {
   useEffect(()=>{
     api.get('users').then((response) =>{
     setUsers(response.data);
-    console.log(response.data);
     })
   }, [])
 
-  function handleItem(data){
-    api.get('consultas/'+ data.Id_Usuario).then((response) =>{
-    navigation.navigate('Detalhes');
-    })
-
-  }
-
-
+  console.log(users)
   return (
 
     <>

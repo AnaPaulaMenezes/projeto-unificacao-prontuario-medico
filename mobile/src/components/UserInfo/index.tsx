@@ -28,8 +28,8 @@ export default function ProfileInfo({ data }) {
                         </Content>
                         <Line></Line>
                         <Content>
-                            <Text>Email</Text>
-                            <UserInfo>{data.nome_Usuario}</UserInfo>
+                            <Text>CPF</Text>
+                            <UserInfo>{data.endereco_email}</UserInfo>
                         </Content>
                         <Line></Line>
                         <Content>
