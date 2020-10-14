@@ -14,11 +14,10 @@ import Consulta from './Consulta';
 @Entity('Estabelecimento')
 class Estabelecimento {
   @PrimaryGeneratedColumn()
-  Id_Estabelecimento : number;
+  Id_Estabelecimento: number;
 
   @Column()
-  descricao_Estabelecimento : string;
-
+  descricao_Estabelecimento: string;
 
   @Column()
   cnpj_Estabelecimento: string;
@@ -33,4 +32,4 @@ class Estabelecimento {
   consultas: Consulta[];
 }
 
-export default Estabelecimento ;
+export default Estabelecimento;

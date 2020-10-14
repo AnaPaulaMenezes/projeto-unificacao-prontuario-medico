@@ -15,14 +15,6 @@ interface dados {
   cpf_Usuario: string;
 };
 
-// interface dados{
-//   Id_Consulta: number;
-//   diagnostico_Consulta:string;
-//   dtAlteracao_Consulta:string;
-//   sintomasPaciente_Consulta:string;
-//   Id_Usuario:number;
-// };
-
 const Perfil: React.FC = () => {
 
   const [users, setUsers] = useState<dados>({} as dados);

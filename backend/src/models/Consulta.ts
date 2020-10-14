@@ -64,7 +64,7 @@ class Consulta {
   estabelecimento: Estabelecimento;
 
   @OneToMany(type => Exame_Consulta, exame_consulta => exame_consulta.consulta, { eager: true })
-  Exame_consultas: Exame_Consulta[];
+  Exames_consulta: Exame_Consulta[];
 }
 
 export default Consulta;
