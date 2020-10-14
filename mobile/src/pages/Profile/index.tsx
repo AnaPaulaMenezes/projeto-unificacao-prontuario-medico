@@ -34,8 +34,8 @@ const Perfil: React.FC = () => {
         </View> */}
         <View style={{ alignSelf: "center" }}>
           <View style={styles.profileImage}>
-            <Image source={require("./assets/profile.jpg")} style={styles.image} resizeMode="center"></Image>
-          </View>
+            {/*<Image source={require("./assets/profile.jpg")} style={styles.image} resizeMode="center"></Image>
+          */}</View>
         </View>
         <View style={{ alignSelf: "center" }}>
           <Text style={styles.text}> Dados Pessoais</Text>

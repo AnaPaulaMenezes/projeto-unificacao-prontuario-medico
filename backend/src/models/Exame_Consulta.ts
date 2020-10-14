@@ -37,6 +37,9 @@ class Exame_Consulta {
   @UpdateDateColumn()
   dtAlteracao_Exame_Consulta: Date;
 
+  @Column()
+  arquivo_Exame_Consulta: string;
+
   @ManyToOne(() => Consulta)
   @JoinColumn({ name: 'Id_Consulta' })
   consulta: Consulta;
