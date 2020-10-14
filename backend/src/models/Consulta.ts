@@ -65,6 +65,9 @@ class Consulta {
 
   @OneToMany(type => Exame_Consulta, exame_consulta => exame_consulta.consulta, { eager: true })
   Exames_consulta: Exame_Consulta[];
+
+  @Column()
+  dt_Consulta: Date;
 }
 
 export default Consulta;
