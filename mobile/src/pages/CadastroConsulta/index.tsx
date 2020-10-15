@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useCallback, useRef} from 'react';
-import {  ScrollView} from 'react-native';
+import {  ScrollView, Linking} from 'react-native';
 import { Form } from '@unform/mobile';
 import Header from '../../components/Header';
 import Button from '../../components/Button';
@@ -88,13 +88,7 @@ const CadastroConsulta: React.FC = () => {
       ref={formRef}
       >
       <Items>
-        <Item>
 
-          <Input
-            placeholder="Clinica"
-            name="especialidade_Consulta"
-          ></Input>
-        </Item>
         <Item>
 
           <Input
@@ -126,6 +120,14 @@ const CadastroConsulta: React.FC = () => {
         <Item>
         <Picker name="medico" values={medicoValues} initialTextValue="Selecione um médico"/>
         </Item>
+
+        <Item>
+
+        <Input
+            placeholder="Especialidade"
+            name="especialidade_Consulta"
+        ></Input>
+        </Item>
         <Item>
         <Picker name="estabelecimento" values={estabelecimentoValues} initialTextValue="Selecione o estabelecimento"/>
         </Item>
@@ -134,7 +136,7 @@ const CadastroConsulta: React.FC = () => {
           <Texto>Data</Texto>
           <DatePicker
           style={{width:290}}
-          format="DD-MM-YYYY"
+          format="DD-MM-YYYY hh:mm"
           date={data}
           onDateChange={(value) =>{setData(value)}}
           ></DatePicker>
@@ -143,6 +145,7 @@ const CadastroConsulta: React.FC = () => {
           <Button
           onPress={()=>{
             formRef.current?.submitForm();
+            //Linking.openURL('https://consultastorage.blob.core.windows.net/images/sea.png');
           }}
           >Salvar</Button>
         </Item>

@@ -1,16 +1,19 @@
-import React, {useEffect, useState}from 'react';
-import {FlatList, StyleSheet} from 'react-native';
+import React, {useEffect, useState, useRef} from 'react';
+import {FlatList, StyleSheet, Text, View, Button} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/Header';
 import HistoricoList from '../../components/HistoricoList';
+import Detalhes from '../../components/Detalhes';
+import {Modalize} from 'react-native-modalize';
 
 import {
   Container,
   Nome,
   NewLink,
   Form,
-  List
+  List,
+  Modal
 
 } from './styles';
 import api from '../../api';
@@ -22,13 +25,22 @@ interface dados{
   diagnostico_Consulta:string;
   dtAlteracao_Consulta:string;
   sintomasPaciente_Consulta:string;
-  Id_Usuario:number;
+  Exames_consulta:[{
+    Id_Exame_Consulta: number;
+    Id_Exame:number;
+    tecnico_Exame_Consulta: string;
+    arquivo_Exame_Consulta:string;
+  }];
+
 };
 
 
 const History: React.FC = () => {
-
+  const [relat, setRelat] = useState<dados>({} as dados);
   const [consulta, setConsulta] = useState<dados>({} as dados);
+  const [modalVisible, setModalVisible] = useState(false);
+  const modalizeRef = useRef(null);
+
 
   const navigation = useNavigation();
   useEffect(()=>{
@@ -39,7 +51,9 @@ const History: React.FC = () => {
 
   function handleItem(data){
     api.get('consultas/'+ data.Id_Consulta).then((response) =>{
-    navigation.navigate('Detalhes');
+    setRelat (response.data);
+    console.log(response.tecnico_Exame_Consulta);
+    modalizeRef.current?.open();
     })
 
   }
@@ -48,6 +62,7 @@ const History: React.FC = () => {
     <>
 
       <Container>
+
         <Header/>
         <Form>
           <Nome>Consultas</Nome>
@@ -63,7 +78,24 @@ const History: React.FC = () => {
         >
         </List>
 
+      <Modal
+      ref={modalizeRef}
+      snapPoint={300}
+
+      flatListProps={{
+        data: relat,
+        renderItem: ({item})=>(<Detalhes data={item} />),
+        keyExtractor: item => item.Id_Consulta.toString(),
+        showsVerticalScrollIndicator: false
+      }}
+
+      >
+
+      </Modal>
+
+
      </Container>
+
 
 
     </>

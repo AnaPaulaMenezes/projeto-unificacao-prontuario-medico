@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import LinearGradient from 'react-native-linear-gradient';
 
 export const LogoImg = styled.Image`
   align-items: center;
@@ -8,7 +9,11 @@ export const LogoImg = styled.Image`
   height: 150px;
 `;
 
-export const Container = styled.View`
+export const Container = styled(LinearGradient).attrs({
+  colors:['#A0C9D9','#e1e5e6'],
+  start:{ x:0, y:1},
+  end:{x:0,y:0},
+})`
   flex: 1;
   flex-direction: column;
   align-items: center;

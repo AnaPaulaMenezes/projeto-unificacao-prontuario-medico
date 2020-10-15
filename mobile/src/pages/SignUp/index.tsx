@@ -107,12 +107,7 @@ const SignUp: React.FC = () => {
 
   return (
     <>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1 }}
-        enabled
-      >
-        <ScrollView >
+
           <Container>
             <Title>Faça seu cadastro</Title>
 
@@ -197,11 +192,6 @@ const SignUp: React.FC = () => {
               </Button>
             </Form>
           </Container>
-        </ScrollView>
-      </KeyboardAvoidingView>
-      <ButtonSigIn onPress={() => navigation.goBack()}>
-        <Text>Voltar</Text>
-      </ButtonSigIn>
 
     </>
   );

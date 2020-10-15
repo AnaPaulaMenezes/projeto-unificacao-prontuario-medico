@@ -2,6 +2,9 @@ import styled from 'styled-components/native';
 import { RectButton } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { Component } from 'react';
+import {Modalize} from 'react-native-modalize';
+
+
 
 
 export const Container = styled(LinearGradient).attrs({
@@ -11,6 +14,12 @@ export const Container = styled(LinearGradient).attrs({
 })`
   flex: 1;
 
+`;
+
+export const Modal = styled(Modalize).attrs({
+
+})`
+flex:1;
 `;
 
 export const List = styled.FlatList.attrs({

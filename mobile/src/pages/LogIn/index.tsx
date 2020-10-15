@@ -76,12 +76,7 @@ const LogIn: React.FC = () => {
 
   return (
     <>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1 }}
-        enabled
-      >
-        <ScrollView>
+
           <Container>
             <LogoImg source={logoImg} />
 
@@ -132,8 +127,7 @@ const LogIn: React.FC = () => {
               </ButtonSigIn>
             </Form>
           </Container>
-        </ScrollView>
-      </KeyboardAvoidingView>
+
     </>
   );
 };
