@@ -6,10 +6,12 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   OneToMany,
+  ManyToOne,
   JoinColumn
 } from 'typeorm';
 
 import Consulta from './Consulta';
+import Especialidade from './Especialidade';
 
 @Entity('Medico')
 class Medico {
@@ -23,6 +25,9 @@ class Medico {
   @Column()
   crm_Medico: string;
 
+  @Column()
+  Id_Especialidade: number;
+
   @CreateDateColumn()
   dtCriacao_Medico: Date;
 
@@ -31,6 +36,11 @@ class Medico {
 
   @OneToMany(type => Consulta, consulta => consulta.medico)
   consultas: Consulta[];
+
+  @ManyToOne(() => Especialidade, { eager: true })
+  @JoinColumn({ name: 'Id_Especialidade' })
+  especialidade: Especialidade;
+
 
 }
 
