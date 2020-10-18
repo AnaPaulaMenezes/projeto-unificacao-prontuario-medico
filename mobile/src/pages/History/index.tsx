@@ -30,6 +30,12 @@ interface dados{
     Id_Exame:number;
     tecnico_Exame_Consulta: string;
     arquivo_Exame_Consulta:string;
+    dtAlteracao_Exame_Consulta:string;
+    exame:[{
+      Id_Exame:number;
+      descricao_Exame: string;
+      obs_Exame:string;
+    }]
   }];
 
 };
@@ -38,25 +44,26 @@ interface dados{
 const History: React.FC = () => {
   const [relat, setRelat] = useState<dados>({} as dados);
   const [consulta, setConsulta] = useState<dados>({} as dados);
-  const [modalVisible, setModalVisible] = useState(false);
   const modalizeRef = useRef(null);
+  const [exames, setExames] = useState<dados[]>([]);
 
 
   const navigation = useNavigation();
   useEffect(()=>{
     api.get('consultas').then((response) =>{
     setConsulta(response.data);
+
     })
   }, [])
 
   function handleItem(data){
     api.get('consultas/'+ data.Id_Consulta).then((response) =>{
     setRelat (response.data);
-    console.log(response.tecnico_Exame_Consulta);
     modalizeRef.current?.open();
     })
 
   }
+
   return (
 
     <>
@@ -81,7 +88,6 @@ const History: React.FC = () => {
       <Modal
       ref={modalizeRef}
       snapPoint={300}
-
       flatListProps={{
         data: relat,
         renderItem: ({item})=>(<Detalhes data={item} />),

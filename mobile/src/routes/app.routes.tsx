@@ -15,7 +15,6 @@ const AppRoutes: React.FC = () => (
 
     <AppDrawer.Screen name="Histórico" component={History} />
     <AppDrawer.Screen name="Usuario" component={Profile} />
-    <AppDrawer.Screen name="Detalhes" component={Detalhes} />
     <AppDrawer.Screen name="Cadastro" component={Cadastro}/>
   </AppDrawer.Navigator>
 

@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 
 export const Container= styled(LinearGradient).attrs({
-  colors:['#A0C9D9','#e1e5e6'],
+  colors:['#A0C9D9','#ffff'],
   start:{ x:0, y:0},
   end:{x:0,y:1},
 })`
