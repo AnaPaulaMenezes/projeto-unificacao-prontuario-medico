@@ -75,5 +75,6 @@ export const ButtonArea = styled.View`
 margin-top: 30px;
 margin-left: 20px;
 margin-right: 20px;
+margin-bottom: 15px;
 
 `;

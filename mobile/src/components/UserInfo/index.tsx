@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign'
 import { useNavigation, NavigationContainer } from '@react-navigation/native';
 
@@ -29,18 +29,19 @@ export default function ProfileInfo({ data }) {
                         <Line></Line>
                         <Content>
                             <Text>CPF</Text>
-                            <UserInfo>{data.endereco_email}</UserInfo>
-                        </Content>
-                        <Line></Line>
-                        <Content>
-                            <Text>Telefone</Text>
-                            <UserInfo>{data.rg_Usuario}</UserInfo>
+                            <UserInfo>{data.cpf_Usuario}</UserInfo>
                         </Content>
                         <Line></Line>
                         <Content>
                             <Text>Data de nascimento</Text>
-                            <UserInfo>Cidade: Macapá2</UserInfo>
+                            <UserInfo>{data.rg_Usuario}</UserInfo>
                         </Content>
+                        <Line></Line>
+                        <Content>
+                            <Text>Email</Text>
+                            <UserInfo>{data.emails[0].endereco_Email}</UserInfo>
+                        </Content>
+                        <Line></Line>
                         <ButtonArea>
                             <Button
                                 title="Editar"
