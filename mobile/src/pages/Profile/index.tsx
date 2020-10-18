@@ -13,7 +13,7 @@ interface dados {
   nome_Usuario: string;
   cpf_Usuario: string;
   rg_Usuario: string;
-  email_Usuario: [{
+  emails: [{
     endereco_Email: string,
   }];
 };
@@ -31,9 +31,7 @@ const Perfil: React.FC = () => {
 
   console.log(users)
   return (
-
     <>
-
       <Container>
         <Header/>
          <List
@@ -45,8 +43,6 @@ const Perfil: React.FC = () => {
         </List>
 
      </Container>
-
-
     </>
   );
 }
