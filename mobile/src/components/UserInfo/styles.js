@@ -21,15 +21,15 @@ border-radius: 100px;
 
 export const Info = styled.View`
 width: 300px;
-height: 420px;
+height: 430px;
 border-radius: 20px;
 text-align: left;
-background-color: #FFF;
+background-color: #dcdcdc;
 `;
 
 export const InfoModal = styled.View`
 width: 360px;
-height: 700px;
+height: 720px;
 border-radius: 20px;
 text-align: left;
 background-color: #FFF;
@@ -44,7 +44,8 @@ margin-top: 10px;
 export const Content = styled.View`
 margin-top: 15px;
 border-radius: 4px;
-
+margin-left: 15px;
+margin-right: 15px;
 `;
 
 export const Title = styled.Text`
@@ -76,5 +77,7 @@ margin-top: 30px;
 margin-left: 20px;
 margin-right: 20px;
 margin-bottom: 15px;
-
+display: flex;
+align-content: center;
+background-color: #FDF;
 `;
