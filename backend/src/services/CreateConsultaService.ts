@@ -5,8 +5,8 @@ import AppError from '../errors/AppError';
 
 interface IRequest {
   Id_Usuario: Number;
-  diagnostico_Consulta: string;
-  receita_Consulta: string;
+  diagnostico_Consulta?: string;
+  receita_Consulta?: string;
   especialidade_Consulta: string;
   sintomasPaciente_Consulta: string;
   obs_Consulta: string;
@@ -39,8 +39,8 @@ class CreateUser {
     if (p) {
       const novaConsulta = consultaRepositorie.create({
         Id_Paciente: p.Id_Paciente,
-        diagnostico_Consulta,
-        receita_Consulta,
+        diagnostico_Consulta: diagnostico_Consulta ? diagnostico_Consulta : '',
+        receita_Consulta: receita_Consulta ? receita_Consulta : '',
         especialidade_Consulta,
         sintomasPaciente_Consulta,
         obs_Consulta,

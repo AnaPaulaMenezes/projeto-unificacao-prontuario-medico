@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ScrollView, Linking, } from 'react-native';
+import { ScrollView, Linking, Alert, } from 'react-native';
 import { Form } from '@unform/mobile';
 import Header from '../../components/Header';
 import Button from '../../components/Button';
@@ -111,7 +111,8 @@ const CadastroConsulta: React.FC = () => {
       console.log('DataConsulta', data);
       const response = await api.post('/consultas', data);
 
-      Al
+      Alert.alert('Consulta agendada', 'Consulta agendada com sucesso');
+
     }, []);
 
 
@@ -137,20 +138,8 @@ const CadastroConsulta: React.FC = () => {
                 name="sintomasPaciente_Consulta"
               ></Input>
             </Item>
-            <Item>
 
-              <Input
-                placeholder="Análise"
-                name="diagnostico_Consulta"
-              ></Input>
-            </Item>
-            <Item>
 
-              <Input
-                placeholder="Receita"
-                name="receita_Consulta"
-              ></Input>
-            </Item>
             <Item>
 
               <Input
