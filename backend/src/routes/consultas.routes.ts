@@ -29,17 +29,19 @@ consultasRouter.get('/', ensureAuthenticated, async (request: Request, response:
 //Lista os horarios insdisponiveis
 
 consultasRouter.get('/disponibilidade', ensureAuthenticated, async (request: Request, response: Response) => {
-  const { Id_Medico, dt_Consulta } = request.body;
+  const { Id_Medico, dt_consulta } = request.query;
+  console.log(request.query)
   const consultasRepositorie = getRepository(Consulta);
   const horarios = await consultasRepositorie.find({
     where: {
-      Id_Medico, dt_Consulta: Raw(
+      Id_Medico, dt_consulta: Raw(
         dateFieldName =>
-          `convert(varchar(10), ${dateFieldName}, 120) = '${dt_Consulta}'`,
+
+          `convert(varchar(10), ${dateFieldName?.toString()}, 120) = '${dt_consulta?.toString()}'`,
       ),
     }
   });
-
+  console.log(horarios)
   return response.json(classToClass(horarios));
 });
 
@@ -67,7 +69,7 @@ consultasRouter.post('/', ensureAuthenticated, async (request: Request, response
     obs_Consulta,
     Id_Estabelecimento,
     Id_Medico,
-    dt_Consulta
+    dt_consulta
   } = request.body;
 
   const createConsulta = new CreateConsultaService();
@@ -80,7 +82,7 @@ consultasRouter.post('/', ensureAuthenticated, async (request: Request, response
     obs_Consulta,
     Id_Estabelecimento,
     Id_Medico,
-    dt_Consulta
+    dt_consulta
   });
   return response.json(consulta);
 });
