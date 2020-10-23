@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ScrollView, Linking, Alert, Text } from 'react-native';
+import { ScrollView, TextInput, Alert, Text, Picker as Select, PickerProps } from 'react-native';
 import { Form } from '@unform/mobile';
 import Header from '../../components/Header';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import DatePicker from 'react-native-datepicker';
+import * as Yup from 'yup';
+import getValidationErrors from '../../utils/getValidationErrors';
 import {
   Container,
   Nome,
@@ -21,6 +23,8 @@ import api from '../../api';
 import { FormHandles } from '@unform/core';
 import { format } from 'date-fns';
 import Picker, { ListValue } from '../../components/Picker';
+import parseISO from 'date-fns/parseISO'
+
 
 
 interface CadastroConsulta {
@@ -50,8 +54,14 @@ interface estabelecimento {
 
 const CadastroConsulta: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
-  const especialidadeRef = useRef(null);
-  const medicoRef = useRef(null);
+  const sintomasRef = useRef<TextInput>(null);
+  const ObservacaoRef = useRef<TextInput>(null);
+  const especialidadeRef = useRef<TextInput>(null);
+  const medicoRef = useRef<TextInput>(null);
+  const estabelecimentoRef = useRef<TextInput>(null);
+  const dataRef = useRef<TextInput>(null);
+  const horaRef = useRef<TextInput>(null);
+
   const [selectedData, setSelectedData] = useState('');
   const [selectedValue, setSelectedValue] = useState("0");
   const [selectedMedico, setSelectedMedico] = useState("0");
@@ -115,18 +125,33 @@ const CadastroConsulta: React.FC = () => {
 
     });
 
-    api.get('medicos').then((response) => {
-      console.log(especialidadeRef?.current)
-      const formatValues = response.data.map((item: medico) => {
-        return {
-          id: item.Id_Medico,
-          value: item.nome_Medico,
-        }
-      })
+    if (selectedMedico) {
+      api.get(`/medicos/${selectedMedico}`).then((response) => {
 
-      setMedicoValues(formatValues);
+        const formatValues = response.data.map((item: medico) => {
+          return {
+            id: item.Id_Medico,
+            value: item.nome_Medico,
+          }
+        })
+        setMedicoValues(formatValues);
 
-    });
+      });
+    } else {
+      api.get('medicos').then((response) => {
+
+        const formatValues = response.data.map((item: medico) => {
+          return {
+            id: item.Id_Medico,
+            value: item.nome_Medico,
+          }
+        })
+        setMedicoValues(formatValues);
+
+      });
+    }
+
+
 
 
     api.get('estabelecimentos').then((response) => {
@@ -140,6 +165,8 @@ const CadastroConsulta: React.FC = () => {
       setEstabelecimentoValues(formatValues);
     })
 
+    const dataAtual = format(new Date(), 'dd/MM/yyyy');
+    setSelectedData(dataAtual);
 
   }, [])
 
@@ -201,20 +228,66 @@ const CadastroConsulta: React.FC = () => {
 
   const handleConsulta = useCallback(
     async (data: CadastroConsulta) => {
-      const dia = selectedData.split("/")[0];
-      const mes = selectedData.split("/")[1];
-      const ano = selectedData.split("/")[2];
-      const dataFormatada = `${ano}-${mes.slice(-2)}-${dia.slice(-2)} ${selectedHour}`;
+
+      try {
+
+        formRef.current?.setErrors({});
+
+        const schema = Yup.object().shape({
+          sintomasPaciente_Consulta: Yup.string().required('Obrigatório'),
+          Id_Medico: Yup.string().notOneOf(["0", ""]).required('Obrigatório'),
+          especialidade_Consulta: Yup.string().notOneOf(["0", ""]).required('Obrigatório'),
+          Id_Estabelecimento: Yup.string().notOneOf(["0", ""]).required('Obrigatório'),
+        });
+
+        await schema.validate(data, {
+          abortEarly: false,
+        });
 
 
-      //const dataFormatada = `${format(new Date(selectedData), 'yyyy-MM-dd')} ${selectedHour}`
-      const newData = { ...data, dt_consulta: dataFormatada };
+        const dia = selectedData.split("/")[0];
+        const mes = selectedData.split("/")[1];
+        const ano = selectedData.split("/")[2];
+        const dataFormatada = `${ano}-${mes.slice(-2)}-${dia.slice(-2)} ${selectedHour}`;
+        const newData = { ...data, dt_consulta: dataFormatada };
+
+        if (!selectedData) {
+
+          throw new Error('Informe uma data para a consulta');
+        }
 
 
-      const response = await api.post('/consultas', newData);
-      console.log(response);
 
-      Alert.alert('Consulta agendada', 'Consulta agendada com sucesso');
+        if (parseISO(dataFormatada) <= new Date()) {
+
+          throw new Error('Não é possiel agendar uma consulta para a data informada.');
+        }
+
+        if (!selectedHour) {
+          throw new Error('Informe um horário para a consulta');
+
+        }
+
+
+        const response = await api.post('/consultas', newData);
+
+        Alert.alert('Consulta agendada', 'Consulta agendada com sucesso');
+      }
+      catch (err) {
+
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+
+        Alert.alert(
+          'Erro ao cadastrar',
+          err.message ? err.message : 'Ocorreu um erro ao fazer cadastro, tente novamente.',
+        );
+
+      }
+
 
     }, [selectedHour, selectedData]);
 
@@ -235,8 +308,15 @@ const CadastroConsulta: React.FC = () => {
             <Item>
 
               <Input
+                ref={sintomasRef}
                 placeholder="Sintomas"
                 name="sintomasPaciente_Consulta"
+
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  ObservacaoRef.current?.focus();
+                }}
+
               ></Input>
             </Item>
 
@@ -244,24 +324,35 @@ const CadastroConsulta: React.FC = () => {
             <Item>
 
               <Input
+                ref={ObservacaoRef}
                 placeholder="Observação"
                 name="obs_Consulta"
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  especialidadeRef.current?.focus();
+                }}
               ></Input>
             </Item>
             <Item>
-              <Picker name="especialidade_Consulta" values={especialidadeValues} initialTextValue="Selecione uma especialidade"
-                ref={especialidadeRef} onValueChange={(value) => { handleOnChangeEspecialidade(value) }} valorSelecionado={selectedValue} />
+              <Picker name="especialidade_Consulta"
+                values={especialidadeValues}
+                initialTextValue="Selecione uma especialidade"
+                ref={especialidadeRef}
+                onValueChange={(value) => { handleOnChangeEspecialidade(value) }}
+                valorSelecionado={selectedValue} />
             </Item>
             <Item>
               <Picker name="Id_Medico" ref={medicoRef} values={medicoValues} initialTextValue="Selecione um médico"
                 onValueChange={(value) => {
                   handleOnChangeMedico(value);
-                }} valorSelecionado={selectedMedico} />
+                }} valorSelecionado={selectedMedico}
+
+              />
             </Item>
 
 
             <Item>
-              <Picker name="Id_Estabelecimento" values={estabelecimentoValues} initialTextValue="Selecione o estabelecimento" />
+              <Picker name="Id_Estabelecimento" ref={estabelecimentoRef} values={estabelecimentoValues} initialTextValue="Selecione o estabelecimento" />
             </Item>
 
 
@@ -284,6 +375,7 @@ const CadastroConsulta: React.FC = () => {
                       enabled={true}
                       available={true}
                       key={item}
+
                       onPress={() => { handleSelectHour(item) }}
                       selected={selectedHour === item}
                     >

@@ -99,7 +99,7 @@ export const HourContainer = styled.View`
 `;
 
 export const TitleSection = styled.Text`
-  font-size:17;
+  font-size:17px;
   font-weight: bold;
   padding: 5px;
 
