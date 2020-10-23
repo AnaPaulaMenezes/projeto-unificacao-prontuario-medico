@@ -37,7 +37,7 @@ export default function Detalhes({ data }) {
           {data.sintomasPaciente_Consulta}
         </Title>
       </Stat>
-      {data.Exames_consulta[0] ? <Descricao>-----------------------Exames----------------------------</Descricao> : <Descricao></Descricao>}
+      {data.Exames_consulta[0] ? <Descricao>Exames</Descricao> : <Descricao></Descricao>}
 
 
       {data.Exames_consulta?.map((item) => {
@@ -65,7 +65,7 @@ export default function Detalhes({ data }) {
               ><Title>Visualizar exames</Title></Link>
             </Stat>
 
-            <Descricao>----------------------------------------------------------------</Descricao>
+            <Text>----------------------------------------------------------------------------------------</Text>
 
           </>
 

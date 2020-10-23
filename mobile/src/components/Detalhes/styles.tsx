@@ -37,5 +37,7 @@ color: #131313;
 font-size:20px;
 margin-top:40px;
 line-height:20px;
+
+margin-left:37%;
 `;
 
