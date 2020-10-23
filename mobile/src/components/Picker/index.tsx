@@ -6,8 +6,8 @@ import React, {
   forwardRef,
   useState,
 } from 'react';
-import { TextInputProps, PickerProps} from 'react-native';
-import {PickerComponent, Container} from './styles';
+import { TextInputProps, PickerProps } from 'react-native';
+import { PickerComponent, Container } from './styles';
 
 import { useField } from '@unform/core';
 
@@ -19,6 +19,8 @@ interface PickerProperties extends PickerProps {
   name: string;
   values: ListValue[];
   initialTextValue: string;
+  valorSelecionado?: string;
+
 
 }
 
@@ -31,7 +33,7 @@ interface InputRef {
 }
 
 const Picker: React.ForwardRefRenderFunction<InputRef, PickerProperties> = (
-  { name,values,initialTextValue,...rest },
+  { name, values, onValueChange, initialTextValue, valorSelecionado, ...rest },
   ref,
 ) => {
   const inputElementRef = useRef<any>(null);
@@ -43,6 +45,7 @@ const Picker: React.ForwardRefRenderFunction<InputRef, PickerProperties> = (
 
   const handleOnChange = useCallback(
     value => {
+
       setSelectedValue(value);
     },
     [selectedValue],
@@ -55,24 +58,24 @@ const Picker: React.ForwardRefRenderFunction<InputRef, PickerProperties> = (
       path: 'value',
     });
 
-    inputValueRef.current.value = selectedValue;
+    inputValueRef.current.value = valorSelecionado ? valorSelecionado : selectedValue;
+    //inputElementRef?.current.addEventListener("change", handleOnChange);
 
-
-  }, [fieldName, registerField,selectedValue]);
+  }, [fieldName, registerField, selectedValue, valorSelecionado]);
 
   return (
-    <Container  isErrored={!!error}>
+    <Container isErrored={!!error}>
       <PickerComponent
         ref={inputElementRef}
-        selectedValue={selectedValue}
+        selectedValue={valorSelecionado ? valorSelecionado : selectedValue}
         {...rest}
-        onValueChange ={(value) => {handleOnChange(value)}}
+        onValueChange={onValueChange ? onValueChange : handleOnChange}
 
-        >
-          <PickerComponent.Item label={initialTextValue} value="0"  />
-          {values.map((item)=>{
-            return ( <PickerComponent.Item key={item.id} label={item.value} value={item.id} />);
-          })}
+      >
+        <PickerComponent.Item label={initialTextValue} value="0" />
+        {values.map((item) => {
+          return (<PickerComponent.Item key={item.id} label={item.value} value={item.id} />);
+        })}
 
       </PickerComponent>
     </Container>

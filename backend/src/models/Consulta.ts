@@ -67,7 +67,7 @@ class Consulta {
   Exames_consulta: Exame_Consulta[];
 
   @Column()
-  dt_Consulta: Date;
+  dt_consulta: Date;
 }
 
 export default Consulta;
