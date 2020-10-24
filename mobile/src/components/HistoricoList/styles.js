@@ -13,7 +13,7 @@ border-radius:4px;
 
 
 export const Stats= styled.View`
-flex-direction:row;
+flex-direction:column;
 margin-top:5px;
 justify-content:space-between;
 `;
