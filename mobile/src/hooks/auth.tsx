@@ -32,12 +32,27 @@ const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>({} as AuthState);
   const [loading, setLoading] = useState(true);
 
+  api.interceptors.request.use(async function (config) {
+    const token = await AsyncStorage.getItem(
+      '@project:token',
+
+    );
+    console.log(token)
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      api.defaults.headers.authorization = `Bearer ${token}`
+    }
+
+    return config;
+  });
+
   api.interceptors.response.use((response) => {
 
     return response
   }, async function (error) {
 
-    if (error.response.status === 401) {
+    if (error?.response?.status === 401) {
       Alert.alert('Sessão expirada', 'Favor refaça seu Login');
       signOut();
       return error;

@@ -76,7 +76,7 @@ export const Hour = styled(RectButton) <HourProps>`
   padding: 12px;
   background: ${props => (props.selected ? '#0190b0' : '#ccc')};
   border-radius: 10px;
-  margin-right: 5px;
+  margin-right: 7px;
   margin-bottom: 5px;
 
   opacity: ${props => (props.available ? 1 : 0.3)};

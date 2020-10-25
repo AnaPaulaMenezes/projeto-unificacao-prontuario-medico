@@ -18,7 +18,7 @@ consultasRouter.get('/', ensureAuthenticated, async (request: Request, response:
 
   if (p.length > 0) {
     const consultasRepositorie = getRepository(Consulta);
-    const consultas = await consultasRepositorie.find({ where: { Id_Paciente: p[0].Id_Paciente } });
+    const consultas = await consultasRepositorie.find({ where: { Id_Paciente: p[0].Id_Paciente }, order: { dt_consulta: "DESC" } });
 
     return response.json(classToClass(consultas));
   } else {

@@ -2,15 +2,15 @@ import styled from 'styled-components/native';
 import { RectButton } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { Component } from 'react';
-import {Modalize} from 'react-native-modalize';
+import { Modalize } from 'react-native-modalize';
 
 
 
 
 export const Container = styled(LinearGradient).attrs({
-  colors:['#A0C9D9','#e1e5e6'],
-  start:{ x:0, y:1},
-  end:{x:0,y:0},
+  colors: ['#A0C9D9', '#e1e5e6'],
+  start: { x: 0, y: 1 },
+  end: { x: 0, y: 0 },
 })`
   flex: 1;
 
@@ -23,10 +23,10 @@ flex:1;
 `;
 
 export const List = styled.FlatList.attrs({
-  contentContainerStyle:{paddingHorizontal:20},
-  showsVerticalScrollIndicator:false,
+  contentContainerStyle: { paddingHorizontal: 20 },
+  showsVerticalScrollIndicator: false,
 
-  })`
+})`
   margin-top:20px;
   `;
 

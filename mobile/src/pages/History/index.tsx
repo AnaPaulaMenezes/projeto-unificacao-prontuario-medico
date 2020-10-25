@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { FlatList, StyleSheet, Text, View, Button } from 'react-native';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { FlatList, StyleSheet, Text, View, Button, } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/Header';
@@ -46,9 +46,22 @@ const History: React.FC = () => {
   const [consulta, setConsulta] = useState<dados>({} as dados);
   const modalizeRef = useRef(null);
   const [exames, setExames] = useState<dados[]>([]);
+  const [loading, setLoading] = useState(false);
 
 
   const navigation = useNavigation();
+
+  const refreshPage = useCallback(() => {
+    if (loading) {
+      return;
+    }
+    setLoading(true);
+    api.get('consultas').then((response) => {
+      setConsulta(response.data);
+      setLoading(false);
+
+    })
+  }, [])
   useEffect(() => {
     api.get('consultas').then((response) => {
       setConsulta(response.data);
@@ -79,6 +92,8 @@ const History: React.FC = () => {
           </NewLink>
         </Form>
         <List
+          onRefresh={refreshPage}
+          refreshing={loading}
           keyboardShouldPeristTaps="handled"
           data={consulta}
           keyExtractor={item => item.Id_Consulta.toString()}

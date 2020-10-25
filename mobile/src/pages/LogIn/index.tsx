@@ -1,4 +1,4 @@
-import React, { useCallback, useRef,useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
@@ -51,7 +51,7 @@ const LogIn: React.FC = () => {
           abortEarly: false,
         });
 
-         await logIn({
+        await logIn({
           cpf_Usuario: data.cpf_Usuario,
           senha_Usuario: data.senha_Usuario,
         });
@@ -77,56 +77,54 @@ const LogIn: React.FC = () => {
   return (
     <>
 
-          <Container>
-            <LogoImg source={logoImg} />
+      <Container>
+        <LogoImg source={logoImg} />
 
-            <Title>Faça seu login</Title>
+        <Title>Faça seu login</Title>
 
-            <Form
-              ref={formRef}
-              onSubmit={handleSubmit}
-              style={{ width: '100%' }}
-            >
-              <Input
-                ref={cpfInputRef}
-                name="cpf_Usuario"
-                mask="cpf"
-                maxLength={14}
-                placeholder="CPF"
-                autoCorrect={false}
-                autoCapitalize="none"
-                keyboardType="numeric"
-                returnKeyType="next"
-                onSubmitEditing = { () => {
-                  passwordInputRef.current?.focus();
-                }}
-              />
-              <Input
-                ref={passwordInputRef}
-                name="senha_Usuario"
-                placeholder="Senha"
-                secureTextEntry
-                returnKeyType="send"
-                onSubmitEditing={() => formRef.current?.submitForm()}
-              />
+        <Form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          style={{ width: '100%' }}
+        >
+          <Input
+            ref={cpfInputRef}
+            name="cpf_Usuario"
+            mask="cpf"
+            maxLength={14}
+            placeholder="CPF"
+            autoCorrect={false}
+            autoCapitalize="none"
+            keyboardType="numeric"
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              passwordInputRef.current?.focus();
+            }}
+          />
+          <Input
+            ref={passwordInputRef}
+            name="senha_Usuario"
+            placeholder="Senha"
+            secureTextEntry
+            returnKeyType="send"
+            onSubmitEditing={() => formRef.current?.submitForm()}
+          />
 
-              <Button
-                onPress={() => {
-                  formRef.current?.submitForm();
-                }}
-              >
-                Entrar
+          <Button
+            onPress={() => {
+              formRef.current?.submitForm();
+            }}
+          >
+            Entrar
               </Button>
 
-              <ButtonForgotPassword>
-                <Text>Esqueci minha senha</Text>
-              </ButtonForgotPassword>
 
-              <ButtonSigIn onPress={() => navigation.navigate('SignUp')}>
-                <Text>Cadastre-se</Text>
-              </ButtonSigIn>
-            </Form>
-          </Container>
+
+          <ButtonSigIn onPress={() => navigation.navigate('SignUp')}>
+            <Text>Cadastre-se</Text>
+          </ButtonSigIn>
+        </Form>
+      </Container>
 
     </>
   );
