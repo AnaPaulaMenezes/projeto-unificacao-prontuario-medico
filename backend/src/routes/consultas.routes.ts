@@ -41,7 +41,7 @@ consultasRouter.get('/disponibilidade', ensureAuthenticated, async (request: Req
       ),
     }
   });
-  console.log(horarios)
+ // console.log(horarios)
   return response.json(classToClass(horarios));
 });
 

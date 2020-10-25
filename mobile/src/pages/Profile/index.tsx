@@ -16,6 +16,9 @@ interface dados {
   emails: [{
     endereco_Email: string,
   }];
+  telefones: [{
+    numero_Telefone: string,
+  }]
 };
 
 const Perfil: React.FC = () => {
@@ -26,10 +29,10 @@ const Perfil: React.FC = () => {
   useEffect(()=>{
     api.get('users').then((response) =>{
     setUsers(response.data);
+    //console.log(response.data.numero_Telefone)
     })
   }, [])
 
-  console.log(users)
   return (
     <>
       <Container>

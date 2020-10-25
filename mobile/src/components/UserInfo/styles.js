@@ -21,19 +21,20 @@ border-radius: 100px;
 
 export const Info = styled.View`
 width: 300px;
-height: 430px;
+height: 150px;
 border-radius: 20px;
 text-align: left;
 background-color: #dcdcdc;
 `;
 
 export const InfoModal = styled.View`
-width: 360px;
-height: 720px;
+width: 300px;
+height: 500px;
 border-radius: 20px;
 text-align: left;
 background-color: #FFF;
-margin-top: 5px;
+margin-top: 150px;
+margin-bottom: 150px;
 `;
 
 export const Text = styled.Text`
@@ -80,4 +81,8 @@ margin-bottom: 15px;
 display: flex;
 align-content: center;
 background-color: #FDF;
+`;
+
+export const Invisible = styled.View`
+display: none;
 `;

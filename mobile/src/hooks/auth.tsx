@@ -37,7 +37,7 @@ const AuthProvider: React.FC = ({ children }) => {
       '@project:token',
 
     );
-    console.log(token)
+   // console.log(token)
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

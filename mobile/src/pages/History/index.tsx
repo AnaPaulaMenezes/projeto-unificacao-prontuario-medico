@@ -71,7 +71,7 @@ const History: React.FC = () => {
 
   function handleItem(data) {
     api.get('consultas/' + data.Id_Consulta).then((response) => {
-      console.log(data)
+     // console.log(data)
       setRelat(response.data);
       modalizeRef.current?.open();
     })
