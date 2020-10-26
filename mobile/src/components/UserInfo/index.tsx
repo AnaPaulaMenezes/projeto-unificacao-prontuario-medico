@@ -52,7 +52,12 @@ export default function ProfileInfo({ data }) {
     const emailRef = useRef<TextInput>(null);
     const { usuario } = useAuth();
 
-    const idtelefone = data.telefones[0]?.Id_Telefone ? data.telefones[0]?.Id_Telefone : vazio
+    const idTelefone = data.telefones[0]?.Id_Telefone ? data.telefones[0]?.Id_Telefone : null;
+    const idEmail = data.emails[0]?.id_Email ? data.emails[0]?.id_Email : "";
+
+    console.log(data,"data normal aqui")
+    console.log(idTelefone, "telefone")
+                        console.log(idEmail, "IdEmail aqui")
   
     const editUserInfo = useCallback(
         async (data: EditData) => {
@@ -69,35 +74,72 @@ export default function ProfileInfo({ data }) {
                 // });
 
                 
-                if (data.email_Usuario[0].endereco_Email !== "") {
+                if (data.email_Usuario[0].endereco_Email !== "" &&  data.telefone_Usuario[0].numero_Telefone !== "") {
                     try {
                         const jsonUsuario = JSON.stringify(usuario);
                         const usuarioDesestruturado = JSON.parse(jsonUsuario)
-                        const newData = {
-                            ...data, email_Usuario: [
-                            {
-                                id_Email: usuarioDesestruturado.emails[0].id_Email,
-                                endereco_Email: data.email_Usuario[0].endereco_Email,
-                                codTipo_Email: 1
-                            },
-                        ],
-                            telefone_Usuario: [
-                            {
-                                Id_Usuario: usuarioDesestruturado.Id_Usuario,
-                                Id_Telefone: idtelefone ? idtelefone : null,
-                                numero_Telefone: data.telefone_Usuario[0].numero_Telefone,
-                                codTipo_Telefone: 1,
-                            },
-                        ],
+                        console.log(data, "data aqui")
                         
-                        }
-                        console.log(newData, "newData aquri")
-                        await api.put('users', newData);
-                        const json = JSON.stringify(data);
-                        const obj = JSON.parse(json)
-                        onChangeName(obj.nome_Usuario);
-                        onChangeEmail(obj.email_Usuario[0].endereco_Email)
-                        console.log("fez o primeiro")
+                       // console.log(usuarioDesestruturado, "idemail")
+                            if (!idTelefone && !idEmail){
+                                console.log("passou aqui ok")
+                                const newData = {
+                                    ...data, email_Usuario: [
+                                    {
+                                        endereco_Email: data.email_Usuario[0].endereco_Email,
+                                        codTipo_Email: 1
+                                    },
+                                ],
+                                    telefone_Usuario: [
+                                    {
+                                        Id_Usuario: usuarioDesestruturado.Id_Usuario,
+                                        numero_Telefone: data.telefone_Usuario[0].numero_Telefone,
+                                        codTipo_Telefone: 1,
+                                    },
+                                ],
+                                
+                                }
+
+                                console.log(newData, "newData aquri")
+                                await api.put('users', newData);
+                                const json = JSON.stringify(data);
+                                const obj = JSON.parse(json)
+                                onChangeName(obj.nome_Usuario);
+                                onChangeEmail(obj.email_Usuario[0].endereco_Email)
+                                onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
+                                console.log("fez o primeiro")
+
+                            }else{
+                                console.log("comecou o segundo")
+                                const newData = {
+                            
+                                    ...data, email_Usuario: [
+                                    {
+                                        id_Email: idEmail,
+                                        endereco_Email: data.email_Usuario[0].endereco_Email,
+                                        codTipo_Email: 1
+                                    },
+                                ],
+                                    telefone_Usuario: [
+                                    {
+                                        Id_Usuario: usuarioDesestruturado.Id_Usuario,
+                                        Id_Telefone: idTelefone,
+                                        numero_Telefone: data.telefone_Usuario[0].numero_Telefone,
+                                        codTipo_Telefone: 1,
+                                    },
+                                ],
+                                
+                                }
+
+                            console.log(newData, "newData aquri")
+                            await api.put('users', newData);
+                            const json = JSON.stringify(data);
+                            const obj = JSON.parse(json)
+                            onChangeName(obj.nome_Usuario);
+                            onChangeEmail(obj.email_Usuario[0].endereco_Email)
+                            onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
+                            console.log("fez o segundo")
+                            }
                     } catch {
                         Alert.alert('Erro ao atualizar');
                     }
