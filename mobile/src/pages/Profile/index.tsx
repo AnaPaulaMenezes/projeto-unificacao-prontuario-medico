@@ -31,7 +31,7 @@ const Perfil: React.FC = () => {
     setUsers(response.data);
     //console.log(response.data.numero_Telefone)
     })
-  }, [])
+  }, [users.emails, users.telefones, users.nome_Usuario])
 
   return (
     <>
