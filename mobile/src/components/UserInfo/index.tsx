@@ -49,6 +49,17 @@ interface EditAddress {
     complemento_Endereco: string;
 };
 
+interface EditPatient {
+    Id_Paciente: number,
+    tipoSanguineo_Paciente: string,
+    altura_Paciente: number,
+    peso_Paciente: string,
+    obs_Paciente: string,
+    alergias_Paciente: string,
+    doencasCronicas_Paciente: string,
+    remediosContinuos_Paciente: string
+}
+
 export default function ProfileInfo({ data }) {
     const navigation = useNavigation();
     const vazio = "Vazio";
@@ -60,23 +71,16 @@ export default function ProfileInfo({ data }) {
     const [tel, onChangeTel] = React.useState(data.telefones[0]?.numero_Telefone ? data.telefones[0]?.numero_Telefone : vazio)
     const [logEndereco, onChangeLogEndereco] = React.useState(data.endereco?.logradouro_Endereco ? data.endereco?.logradouro_Endereco : vazio)
     const [numEndereco, onChangeNumEndereco] = React.useState(data.endereco?.numero_Endereco ? data.endereco?.numero_Endereco : vazio)
-    const [cepEndereco, onChangeCepEndereco] = React.useState(data.endereco?.cep_Endereco ? data.endereco?.cep_Endereco : vazio)
     const [bairroEndereco, onChangeBairroEndereco] = React.useState(data.endereco?.bairro_Endereco ? data.endereco?.bairro_Endereco : vazio)
-    //const [email2, onChangeEmail2] = React.useState(data.emails[1]?.endereco_Email ? data.emails[1].endereco_Email : vazio)
     const nameRef = useRef<TextInput>(data.nome_Usuario);
     const formRef = useRef<FormHandles>(null);
     const formEndRef = useRef<FormHandles>(null);
+    const formPatientRef = useRef<FormHandles>(null);
     const telRef = useRef<TextInput>(null);
     const emailRef = useRef<TextInput>(null);
-    const idEndRef = useRef<TextInput>(null);
-    const cepRef = useRef<TextInput>(null);
     const logRef = useRef<TextInput>(null);
     const numEndRef = useRef<TextInput>(null);
-    const bairroRef = useRef<TextInput>(null);
-    const cidRef = useRef<TextInput>(null);
-    const estRef = useRef<TextInput>(null);
-    const paisRef = useRef<TextInput>(null);
-    const compRef = useRef<TextInput>(null);
+
     const { usuario } = useAuth();
 
     const idTelefone = data.telefones[0]?.Id_Telefone ? data.telefones[0]?.Id_Telefone : null;
@@ -86,6 +90,7 @@ export default function ProfileInfo({ data }) {
     const nomeUsuario = data.nome_Usuario;
     const idUsuario = data.Id_Usuario;
     const idEndereco2 = data.endereco?.Id_Endereco;
+    const idPaciente = data.paciente?.Id_Paciente
 
     //console.log(data.endereco, "data normal aqui")
     //console.log(usuario, "usuario")
@@ -461,6 +466,65 @@ export default function ProfileInfo({ data }) {
         [navigation],
     );
 
+    const editPatient = useCallback(
+        async (data: EditPatient) => {
+            console.log(data)
+            try {
+                if (!idPaciente) {
+                    const newData = {
+                        ...data,
+                        tipoSanguineo_Paciente: "",
+                        altura_Paciente: data.altura_Paciente,
+                        peso_Paciente: data.peso_Paciente,
+                        obs_Paciente: "",
+                        alergias_Paciente: "",
+                        doencasCronicas_Paciente: "",
+                        remediosContinuos_Paciente: "",
+                    }
+                    await api.post('users/endereco', newData);
+
+                    Alert.alert(
+                        'Cadastro realizado, favor relogar para aplicar',
+                    );
+
+                } else if(data.altura_Paciente === null || data.peso_Paciente === ""){
+                    Alert.alert(
+                        'Favor preencher todos campos',
+                    );
+
+                }else {
+                    const newData = {
+                        ...data,
+                        Id_Paciente: idPaciente,
+                        tipoSanguineo_Paciente: "",
+                        altura_Paciente: data.altura_Paciente,
+                        peso_Paciente: data.peso_Paciente,
+                        obs_Paciente: "",
+                        alergias_Paciente: "",
+                        doencasCronicas_Paciente: "",
+                        remediosContinuos_Paciente: "",
+                    }
+                    await api.post('users/endereco', newData);
+
+                    Alert.alert(
+                        'Cadastro realizado, favor relogar para aplicar',
+                    );
+
+
+                }
+
+            } catch (err) {
+                Alert.alert(
+                    'Erro ao cadastrar',
+                    err.message ? err.message : 'Ocorreu um erro ao fazer cadastro, tente novamente.',
+                );
+
+            }
+        },
+        [navigation],
+    );
+
+
 
     return (
         <><SafeAreaView>
@@ -597,6 +661,63 @@ export default function ProfileInfo({ data }) {
                                     <Form
                                         ref={formEndRef}
                                         onSubmit={editAddress}
+                                        style={{ width: '100%' }}
+                                    >
+                                        <Content>
+                                            <Text style={{ marginBottom: 5 }}>Rua</Text>
+                                            <Input style={{}}
+                                                ref={logRef}
+                                                name="endereco.logradouro_Endereco"
+                                                placeholder={logEndereco}
+                                            />
+                                        </Content>
+                                        <Line></Line>
+                                        <Content>
+                                            <Text style={{ marginBottom: 5 }}>Número</Text>
+                                            <Input style={{}}
+                                                ref={numEndRef}
+                                                name="endereco.numero_Endereco"
+                                                autoCapitalize="words"
+                                                returnKeyType="next"
+                                                placeholder={numEndereco}
+                                            />
+                                        </Content>
+                                        <ButtonArea style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                            <Button title="Confirmar"
+                                                onPress={() => {
+                                                    formEndRef.current?.submitForm();
+                                                    setModalVisible2(false);
+                                                }}
+                                            >
+                                            </Button>
+                                            <Button title="Cancelar"
+                                                onPress={() => {
+                                                    setModalVisible2(false)
+                                                }}>
+                                            </Button>
+                                        </ButtonArea>
+                                    </Form>
+                                </InfoModal>
+
+                            </View>
+                        </ScrollView>
+                    </View>
+                </Modal>
+            </View>
+            <View>
+                <Modal
+                    //////////////////////////////////////////////////////////// ultimo
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible3}
+                >
+                    <View style={{ backgroundColor: "#000000aa" }}>
+                        <ScrollView>
+                            <View style={{ alignSelf: "center" }}>
+                                <InfoModal>
+                                    <Form
+                                        ref={formPatientRef}
+                                        onSubmit={editPatient}
                                         style={{ width: '100%' }}
                                     >
                                         <Content>
