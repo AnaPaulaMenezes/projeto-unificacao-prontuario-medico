@@ -72,6 +72,9 @@ export default function ProfileInfo({ data }) {
     const [logEndereco, onChangeLogEndereco] = React.useState(data.endereco?.logradouro_Endereco ? data.endereco?.logradouro_Endereco : vazio)
     const [numEndereco, onChangeNumEndereco] = React.useState(data.endereco?.numero_Endereco ? data.endereco?.numero_Endereco : vazio)
     const [bairroEndereco, onChangeBairroEndereco] = React.useState(data.endereco?.bairro_Endereco ? data.endereco?.bairro_Endereco : vazio)
+    const [alergiaPatient, onChangeAlergiaPatient] = React.useState(data.paciente?.alergias_Paciente ? data.paciente?.alergias_Paciente : vazio)
+    const [obsPatient, onChangeObsPatient] = React.useState(data.paciente?.obs_Paciente ? data.paciente?.obs_Paciente : vazio)
+    const [tipoSangue, onChangeTipoSangue] = React.useState(data.paciente?.tipoSanguineo_Paciente ? data.paciente?.tipoSanguineo_Paciente : vazio)
     const nameRef = useRef<TextInput>(data.nome_Usuario);
     const formRef = useRef<FormHandles>(null);
     const formEndRef = useRef<FormHandles>(null);
@@ -80,6 +83,10 @@ export default function ProfileInfo({ data }) {
     const emailRef = useRef<TextInput>(null);
     const logRef = useRef<TextInput>(null);
     const numEndRef = useRef<TextInput>(null);
+    const alergiaRef = useRef<TextInput>(null);
+    const obsRef = useRef<TextInput>(null);
+    const tipoSangueRef = useRef<TextInput>(null);
+
 
     const { usuario } = useAuth();
 
@@ -91,6 +98,7 @@ export default function ProfileInfo({ data }) {
     const idUsuario = data.Id_Usuario;
     const idEndereco2 = data.endereco?.Id_Endereco;
     const idPaciente = data.paciente?.Id_Paciente
+
 
     //console.log(data.endereco, "data normal aqui")
     //console.log(usuario, "usuario")
@@ -400,7 +408,6 @@ export default function ProfileInfo({ data }) {
 
     const editAddress = useCallback(
         async (data: EditAddress) => {
-            console.log(data)
             try {
                 if (!idEndereco2) {
                     const newData = {
@@ -416,7 +423,7 @@ export default function ProfileInfo({ data }) {
                         complemento_Endereco: data.complemento_Endereco ? data.complemento_Endereco : "",
                     }
                     await api.post('users/endereco', newData);
-                    console.log(newData, "newdata aqui")
+                   // console.log(newData, "newdata aqui")
                     onChangeLogEndereco(data.endereco.logradouro_Endereco);
                     onChangeNumEndereco(data.endereco.numero_Endereco);
                     Alert.alert(
@@ -428,7 +435,6 @@ export default function ProfileInfo({ data }) {
                         'Favor preencher todos campos',
                     );
                 } else {
-                    console.log(data, "data q to passando")
                     const newData = {
                         ...data,
                         Id_Endereco: idEndereco2,
@@ -442,8 +448,6 @@ export default function ProfileInfo({ data }) {
                         pais_Endereco: data.pais_Endereco ? data.pais_Endereco : "",
                         complemento_Endereco: data.complemento_Endereco ? data.complemento_Endereco : "",
                     }
-                    console.log("toaqui2")
-                    console.log(newData, "newdata aqui")
                     await api.put('users/endereco', newData);
 
                     onChangeLogEndereco(data.endereco.logradouro_Endereco);
@@ -468,26 +472,26 @@ export default function ProfileInfo({ data }) {
 
     const editPatient = useCallback(
         async (data: EditPatient) => {
-            console.log(data)
             try {
                 if (!idPaciente) {
                     const newData = {
                         ...data,
-                        tipoSanguineo_Paciente: "",
-                        altura_Paciente: data.altura_Paciente,
-                        peso_Paciente: data.peso_Paciente,
-                        obs_Paciente: "",
-                        alergias_Paciente: "",
+                        Id_Paciente: idPaciente,
+                        tipoSanguineo_Paciente: data.tipoSanguineo_Paciente,
+                        altura_Paciente: 0,
+                        peso_Paciente: 0,
+                        obs_Paciente: data.obs_Paciente,
+                        alergias_Paciente: data.alergias_Paciente,
                         doencasCronicas_Paciente: "",
                         remediosContinuos_Paciente: "",
                     }
-                    await api.post('users/endereco', newData);
+                    await api.post('users/paciente', newData);
 
                     Alert.alert(
                         'Cadastro realizado, favor relogar para aplicar',
                     );
 
-                } else if(data.altura_Paciente === null || data.peso_Paciente === ""){
+                } else if(data.obs_Paciente === "" || data.peso_Paciente === "" || data.tipoSanguineo_Paciente === ""){
                     Alert.alert(
                         'Favor preencher todos campos',
                     );
@@ -496,15 +500,19 @@ export default function ProfileInfo({ data }) {
                     const newData = {
                         ...data,
                         Id_Paciente: idPaciente,
-                        tipoSanguineo_Paciente: "",
-                        altura_Paciente: data.altura_Paciente,
-                        peso_Paciente: data.peso_Paciente,
-                        obs_Paciente: "",
-                        alergias_Paciente: "",
+                        tipoSanguineo_Paciente: data.tipoSanguineo_Paciente,
+                        altura_Paciente: 0,
+                        peso_Paciente: 0,
+                        obs_Paciente: data.obs_Paciente,
+                        alergias_Paciente: data.alergias_Paciente,
                         doencasCronicas_Paciente: "",
                         remediosContinuos_Paciente: "",
                     }
-                    await api.post('users/endereco', newData);
+                    
+                    await api.put('users/paciente', newData);
+                    onChangeObsPatient(data.obs_Paciente)
+                    onChangeAlergiaPatient(data.alergias_Paciente)
+                    onChangeTipoSangue(data.tipoSanguineo_Paciente)
 
                     Alert.alert(
                         'Cadastro realizado, favor relogar para aplicar',
@@ -539,7 +547,7 @@ export default function ProfileInfo({ data }) {
                         <Line></Line>
 
                         <ButtonArea>
-                            <Button onPress={() => { setModalVisible(true) }}
+                            <Button onPress={() => { setModalVisible3(true) }}
                                 title="Editar"
                             >
                             </Button>
@@ -723,33 +731,44 @@ export default function ProfileInfo({ data }) {
                                         <Content>
                                             <Text style={{ marginBottom: 5 }}>Rua</Text>
                                             <Input style={{}}
-                                                ref={logRef}
-                                                name="endereco.logradouro_Endereco"
-                                                placeholder={logEndereco}
+                                                ref={obsRef}
+                                                name="obs_Paciente"
+                                                placeholder={obsPatient}
                                             />
                                         </Content>
                                         <Line></Line>
                                         <Content>
                                             <Text style={{ marginBottom: 5 }}>Número</Text>
                                             <Input style={{}}
-                                                ref={numEndRef}
-                                                name="endereco.numero_Endereco"
+                                                ref={alergiaRef}
+                                                name="alergias_Paciente"
                                                 autoCapitalize="words"
                                                 returnKeyType="next"
-                                                placeholder={numEndereco}
+                                                placeholder={alergiaPatient}
+                                            />
+                                        </Content>
+                                        <Line></Line>
+                                        <Content>
+                                            <Text style={{ marginBottom: 5 }}>Número</Text>
+                                            <Input style={{}}
+                                                ref={tipoSangueRef}
+                                                name="tipoSanguineo_Paciente"
+                                                autoCapitalize="words"
+                                                returnKeyType="next"
+                                                placeholder={tipoSangue}
                                             />
                                         </Content>
                                         <ButtonArea style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                                             <Button title="Confirmar"
                                                 onPress={() => {
-                                                    formEndRef.current?.submitForm();
-                                                    setModalVisible2(false);
+                                                    formPatientRef.current?.submitForm();
+                                                    setModalVisible3(false);
                                                 }}
                                             >
                                             </Button>
                                             <Button title="Cancelar"
                                                 onPress={() => {
-                                                    setModalVisible2(false)
+                                                    setModalVisible3(false)
                                                 }}>
                                             </Button>
                                         </ButtonArea>
