@@ -33,8 +33,9 @@ height: 500px;
 border-radius: 20px;
 text-align: left;
 background-color: #FFF;
-margin-top: 150px;
-margin-bottom: 150px;
+margin-top: 20px;
+margin-bottom: 250px;
+top: 1px;
 `;
 
 export const Text = styled.Text`

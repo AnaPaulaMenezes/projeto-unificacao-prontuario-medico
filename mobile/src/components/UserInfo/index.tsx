@@ -36,6 +36,19 @@ interface EditData {
     ];
 };
 
+interface EditAddress {
+    Id_Endereco: number;
+    Id_Usuario: number;
+    logradouro_Endereco: string;
+    cep_Endereco: number;
+    numero_Endereco: string;
+    bairro_Endereco: string;
+    cidade_Endereco: string;
+    estado_Endereco: string;
+    pais_Endereco: string;
+    complemento_Endereco: string;
+};
+
 export default function ProfileInfo({ data }) {
     const navigation = useNavigation();
     const vazio = "Vazio";
@@ -45,11 +58,25 @@ export default function ProfileInfo({ data }) {
     const [name, onChangeName] = React.useState(data.nome_Usuario)
     const [email, onChangeEmail] = React.useState(data.emails[0]?.endereco_Email ? data.emails[0].endereco_Email : vazio)
     const [tel, onChangeTel] = React.useState(data.telefones[0]?.numero_Telefone ? data.telefones[0]?.numero_Telefone : vazio)
+    const [logEndereco, onChangeLogEndereco] = React.useState(data.endereco?.logradouro_Endereco ? data.endereco?.logradouro_Endereco : vazio)
+    const [numEndereco, onChangeNumEndereco] = React.useState(data.endereco?.numero_Endereco ? data.endereco?.numero_Endereco : vazio)
+    const [cepEndereco, onChangeCepEndereco] = React.useState(data.endereco?.cep_Endereco ? data.endereco?.cep_Endereco : vazio)
+    const [bairroEndereco, onChangeBairroEndereco] = React.useState(data.endereco?.bairro_Endereco ? data.endereco?.bairro_Endereco : vazio)
     //const [email2, onChangeEmail2] = React.useState(data.emails[1]?.endereco_Email ? data.emails[1].endereco_Email : vazio)
     const nameRef = useRef<TextInput>(data.nome_Usuario);
     const formRef = useRef<FormHandles>(null);
+    const formEndRef = useRef<FormHandles>(null);
     const telRef = useRef<TextInput>(null);
     const emailRef = useRef<TextInput>(null);
+    const idEndRef = useRef<TextInput>(null);
+    const cepRef = useRef<TextInput>(null);
+    const logRef = useRef<TextInput>(null);
+    const numEndRef = useRef<TextInput>(null);
+    const bairroRef = useRef<TextInput>(null);
+    const cidRef = useRef<TextInput>(null);
+    const estRef = useRef<TextInput>(null);
+    const paisRef = useRef<TextInput>(null);
+    const compRef = useRef<TextInput>(null);
     const { usuario } = useAuth();
 
     const idTelefone = data.telefones[0]?.Id_Telefone ? data.telefones[0]?.Id_Telefone : null;
@@ -57,16 +84,16 @@ export default function ProfileInfo({ data }) {
     const idEmail = data.emails[0]?.id_Email ? data.emails[0]?.id_Email : "";
     const endEmail = data.emails[0]?.endereco_Email ? data.emails[0]?.endereco_Email : "";
     const nomeUsuario = data.nome_Usuario;
+    const idUsuario = data.Id_Usuario;
+    const idEndereco2 = data.endereco?.Id_Endereco;
 
-  //  console.log(data, "data normal aqui")
-    //console.log(idTelefone, "telefone")
-    console.log(endEmail, "endEmail aqui")
-    console.log(nomeUsuario, "nome usuario aqui");
+    //console.log(data.endereco, "data normal aqui")
+    //console.log(usuario, "usuario")
 
     useEffect(() => {
         // Atualiza o titulo do documento usando a API do browser
         nomeUsuario
-      });
+    });
 
     const editUserInfo = useCallback(
         async (data: EditData) => {
@@ -84,15 +111,11 @@ export default function ProfileInfo({ data }) {
 
 
                 if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario === "") {
-                   //INSERIR EMAIL E NÚMERO DE TELEFONE
+                    //INSERIR EMAIL E NÚMERO DE TELEFONE
                     try {
                         const jsonUsuario = JSON.stringify(usuario);
                         const usuarioDesestruturado = JSON.parse(jsonUsuario)
-                        console.log(data, "data aqui")
-
-                        // console.log(usuarioDesestruturado, "idemail")
                         if (!idTelefone && !idEmail && data.nome_Usuario === "") {
-                            console.log("passou aqui ok")
                             const newData = {
                                 ...data,
                                 nome_Usuario: nomeUsuario,
@@ -111,8 +134,6 @@ export default function ProfileInfo({ data }) {
                                 ],
 
                             }
-
-                            console.log(newData, "newData aquri")
                             await api.put('users', newData);
                             const json = JSON.stringify(newData);
                             const obj = JSON.parse(json)
@@ -121,7 +142,6 @@ export default function ProfileInfo({ data }) {
                             Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
 
                         } else {
-                            console.log("comecou o segundo")
                             const newData = {
 
                                 ...data, email_Usuario: [
@@ -142,7 +162,6 @@ export default function ProfileInfo({ data }) {
 
                             }
 
-                            console.log(newData, "newData aquri")
                             await api.put('users', newData);
                             const json = JSON.stringify(data);
                             const obj = JSON.parse(json)
@@ -162,7 +181,7 @@ export default function ProfileInfo({ data }) {
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
 
-                        ...data, 
+                        ...data,
                         nome_Usuario: data.nome_Usuario,
                         email_Usuario: [
                             {
@@ -181,23 +200,21 @@ export default function ProfileInfo({ data }) {
                         ],
 
                     }
-
-                    console.log(newData, "newData aquri")
                     await api.put('users', newData);
                     const json = JSON.stringify(newData);
                     const obj = JSON.parse(json)
                     onChangeName(obj.nome_Usuario);
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
-                
+
 
                 } else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario === "") {
                     // ALTERANDO APENAS EMAIL
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
-                        ...data, 
-                            nome_Usuario: nomeUsuario,
-                            email_Usuario: [
+                        ...data,
+                        nome_Usuario: nomeUsuario,
+                        email_Usuario: [
                             {
                                 id_Email: idEmail,
                                 endereco_Email: data.email_Usuario[0].endereco_Email,
@@ -221,14 +238,14 @@ export default function ProfileInfo({ data }) {
                     onChangeEmail(obj.email_Usuario[0].endereco_Email)
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
 
-                }else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario === "") {
-                   //ALTERANDO APENAS NUMERO DE TEL
+                } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario === "") {
+                    //ALTERANDO APENAS NUMERO DE TEL
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
-                        ...data, 
-                            nome_Usuario: nomeUsuario,
-                            email_Usuario: [
+                        ...data,
+                        nome_Usuario: nomeUsuario,
+                        email_Usuario: [
                             {
                                 id_Email: idEmail,
                                 endereco_Email: endEmail,
@@ -252,14 +269,14 @@ export default function ProfileInfo({ data }) {
                     onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
 
-                }else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario !== "") {
+                } else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario !== "") {
                     //alterando nome e email
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
-                        ...data, 
-                            nome_Usuario: data.nome_Usuario,
-                            email_Usuario: [
+                        ...data,
+                        nome_Usuario: data.nome_Usuario,
+                        email_Usuario: [
                             {
                                 id_Email: idEmail,
                                 endereco_Email: data.email_Usuario[0].endereco_Email,
@@ -284,14 +301,14 @@ export default function ProfileInfo({ data }) {
                     onChangeEmail(obj.email_Usuario[0].endereco_Email)
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
 
-                }else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario !== "") {
+                } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario !== "") {
                     //alterando nome e TELEFONE
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
-                        ...data, 
-                            nome_Usuario: data.nome_Usuario,
-                            email_Usuario: [
+                        ...data,
+                        nome_Usuario: data.nome_Usuario,
+                        email_Usuario: [
                             {
                                 id_Email: idEmail,
                                 endereco_Email: endEmail,
@@ -316,14 +333,14 @@ export default function ProfileInfo({ data }) {
                     onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
 
-                }else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario !== "") {
+                } else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario !== "") {
                     //alterando nome telefone e email
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
-                        ...data, 
-                            nome_Usuario: data.nome_Usuario,
-                            email_Usuario: [
+                        ...data,
+                        nome_Usuario: data.nome_Usuario,
+                        email_Usuario: [
                             {
                                 id_Email: idEmail,
                                 endereco_Email: data.email_Usuario[0].endereco_Email,
@@ -349,7 +366,7 @@ export default function ProfileInfo({ data }) {
                     onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
 
-                }else {
+                } else {
                     // console.log("só nome")
                     // await api.put('users', name);
                     // const json = JSON.stringify(name);
@@ -376,13 +393,81 @@ export default function ProfileInfo({ data }) {
         [navigation],
     );
 
+    const editAddress = useCallback(
+        async (data: EditAddress) => {
+            console.log(data)
+            try {
+                if (!idEndereco2) {
+                    const newData = {
+                        ...data,
+                        Id_Usuario: idUsuario,
+                        logradouro_Endereco: data.endereco.logradouro_Endereco ? data.endereco.logradouro_Endereco : "",
+                        cep_Endereco: data.cep_Endereco ? data.cep_Endereco : "",
+                        numero_Endereco: data.endereco.numero_Endereco ? data.endereco.numero_Endereco : "",
+                        bairro_Endereco: data.bairro_Endereco ? data.bairro_Endereco : "",
+                        cidade_Endereco: data.cidade_Endereco ? data.cidade_Endereco : "",
+                        estado_Endereco: data.estado_Endereco ? data.estado_Endereco : "",
+                        pais_Endereco: data.pais_Endereco ? data.pais_Endereco : "",
+                        complemento_Endereco: data.complemento_Endereco ? data.complemento_Endereco : "",
+                    }
+                    await api.post('users/endereco', newData);
+                    console.log(newData, "newdata aqui")
+                    onChangeLogEndereco(data.endereco.logradouro_Endereco);
+                    onChangeNumEndereco(data.endereco.numero_Endereco);
+                    Alert.alert(
+                        'Cadastro realizado, favor relogar para aplicar',
+                    );
+
+                } else if (data.endereco.logradouro_Endereco === "" || data.endereco.numero_Endereco === "" || data.endereco.bairro_Endereco === "") {
+                    Alert.alert(
+                        'Favor preencher todos campos',
+                    );
+                } else {
+                    console.log(data, "data q to passando")
+                    const newData = {
+                        ...data,
+                        Id_Endereco: idEndereco2,
+                        Id_Usuario: idUsuario,
+                        logradouro_Endereco: data.endereco.logradouro_Endereco,
+                        cep_Endereco: 123123,
+                        numero_Endereco: data.endereco.numero_Endereco,
+                        bairro_Endereco: data.endereco.bairro_Endereco,
+                        cidade_Endereco: data.cidade_Endereco ? data.cidade_Endereco : "",
+                        estado_Endereco: data.estado_Endereco ? data.estado_Endereco : "",
+                        pais_Endereco: data.pais_Endereco ? data.pais_Endereco : "",
+                        complemento_Endereco: data.complemento_Endereco ? data.complemento_Endereco : "",
+                    }
+                    console.log("toaqui2")
+                    console.log(newData, "newdata aqui")
+                    await api.put('users/endereco', newData);
+
+                    onChangeLogEndereco(data.endereco.logradouro_Endereco);
+                    onChangeNumEndereco(data.endereco.numero_Endereco);
+                    onChangeCepEndereco(data.endereco.numero_Endereco);
+                    Alert.alert(
+                        'Cadastro realizado, favor relogar para aplicar',
+                    );
+
+                }
+
+            } catch (err) {
+                Alert.alert(
+                    'Erro ao cadastrar',
+                    err.message ? err.message : 'Ocorreu um erro ao fazer cadastro, tente novamente.',
+                );
+
+            }
+        },
+        [navigation],
+    );
+
 
     return (
         <><SafeAreaView>
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* <Image source={require("../../assets/download.png")}></Image> */}
                 <View style={{ alignSelf: "center" }}>
-                    <Title> Dados Pessoais</Title>
+                    <Title></Title>
                     <Info>
                         <Content>
                             <UserInfo>Informações Hospitalares</UserInfo>
@@ -398,7 +483,7 @@ export default function ProfileInfo({ data }) {
                     </Info>
                 </View>
                 <View style={{ alignSelf: "center" }}>
-                    <Title> Dados Pessoais</Title>
+                    <Title></Title>
                     <Info>
                         <Content>
                             <UserInfo>Dados pessoais</UserInfo>
@@ -413,14 +498,14 @@ export default function ProfileInfo({ data }) {
                     </Info>
                 </View>
                 <View style={{ alignSelf: "center" }}>
-                    <Title> Dados Pessoais</Title>
+                    <Title> </Title>
                     <Info>
                         <Content>
                             <UserInfo>Endereço</UserInfo>
                         </Content>
                         <Line></Line>
                         <ButtonArea>
-                            <Button onPress={() => { setModalVisible(true) }}
+                            <Button onPress={() => { setModalVisible2(true) }}
                                 title="Editar"
                             >
                             </Button>
@@ -440,7 +525,7 @@ export default function ProfileInfo({ data }) {
                             <InfoModal>
                                 <Form
                                     // initialData={usuario}
-                                    ref={formRef}
+                                    ref={formEndRef}
                                     onSubmit={editUserInfo}
                                     style={{ width: '100%' }}
                                 >
@@ -449,11 +534,6 @@ export default function ProfileInfo({ data }) {
                                         <Input style={{}}
                                             ref={nameRef}
                                             name="nome_Usuario"
-                                            // autoCapitalize="words"
-                                            // returnKeyType="next"
-                                            // onSubmitEditing={() => {
-                                            //     nameRef.current?.focus();
-                                            // }}
                                             placeholder={name}
                                         />
                                     </Content>
@@ -465,9 +545,6 @@ export default function ProfileInfo({ data }) {
                                             name="email_Usuario[0].endereco_Email"
                                             autoCapitalize="words"
                                             returnKeyType="next"
-                                            onSubmitEditing={() => {
-                                                emailRef.current?.focus();
-                                            }}
                                             placeholder={email}
                                         />
 
@@ -480,9 +557,6 @@ export default function ProfileInfo({ data }) {
                                             name="telefone_Usuario[0].numero_Telefone"
                                             autoCapitalize="words"
                                             returnKeyType="next"
-                                            onSubmitEditing={() => {
-                                                emailRef.current?.focus();
-                                            }}
                                             placeholder={tel}
                                         />
 
@@ -505,6 +579,64 @@ export default function ProfileInfo({ data }) {
                             </InfoModal>
 
                         </View>
+                    </View>
+                </Modal>
+            </View>
+
+            <View>
+                <Modal
+                    //////////////////////////////////////////////////////////// AQUIIIIIIIII
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible2}
+                >
+                    <View style={{ backgroundColor: "#000000aa" }}>
+                        <ScrollView>
+                            <View style={{ alignSelf: "center" }}>
+                                <InfoModal>
+                                    <Form
+                                        ref={formEndRef}
+                                        onSubmit={editAddress}
+                                        style={{ width: '100%' }}
+                                    >
+                                        <Content>
+                                            <Text style={{ marginBottom: 5 }}>Rua</Text>
+                                            <Input style={{}}
+                                                ref={logRef}
+                                                name="endereco.logradouro_Endereco"
+                                                placeholder={logEndereco}
+                                            />
+                                        </Content>
+                                        <Line></Line>
+                                        <Content>
+                                            <Text style={{ marginBottom: 5 }}>Número</Text>
+                                            <Input style={{}}
+                                                ref={numEndRef}
+                                                name="endereco.numero_Endereco"
+                                                autoCapitalize="words"
+                                                returnKeyType="next"
+                                                placeholder={numEndereco}
+                                            />
+                                        </Content>
+                                        <ButtonArea style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                            <Button title="Confirmar"
+                                                onPress={() => {
+                                                    formEndRef.current?.submitForm();
+                                                    setModalVisible2(false);
+                                                }}
+                                            >
+                                            </Button>
+                                            <Button title="Cancelar"
+                                                onPress={() => {
+                                                    setModalVisible2(false)
+                                                }}>
+                                            </Button>
+                                        </ButtonArea>
+                                    </Form>
+                                </InfoModal>
+
+                            </View>
+                        </ScrollView>
                     </View>
                 </Modal>
             </View>
