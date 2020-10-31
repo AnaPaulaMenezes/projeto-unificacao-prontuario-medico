@@ -730,7 +730,7 @@ export default function ProfileInfo({ data }) {
                                         style={{ width: '100%' }}
                                     >
                                         <Content>
-                                            <Text style={{ marginBottom: 5 }}>Rua</Text>
+                                            <Text style={{ marginBottom: 5 }}>Observação Paciente</Text>
                                             <Input style={{}}
                                                 ref={obsRef}
                                                 name="obs_Paciente"
@@ -739,7 +739,7 @@ export default function ProfileInfo({ data }) {
                                         </Content>
                                         <Line></Line>
                                         <Content>
-                                            <Text style={{ marginBottom: 5 }}>Número</Text>
+                                            <Text style={{ marginBottom: 5 }}>Alergias</Text>
                                             <Input style={{}}
                                                 ref={alergiaRef}
                                                 name="alergias_Paciente"
@@ -750,7 +750,7 @@ export default function ProfileInfo({ data }) {
                                         </Content>
                                         <Line></Line>
                                         <Content>
-                                            <Text style={{ marginBottom: 5 }}>Número</Text>
+                                            <Text style={{ marginBottom: 5 }}>Tipo Sanguíneo</Text>
                                             <Input style={{}}
                                                 ref={tipoSangueRef}
                                                 name="tipoSanguineo_Paciente"
