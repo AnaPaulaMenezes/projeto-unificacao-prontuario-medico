@@ -125,6 +125,7 @@ export default function ProfileInfo({ data }) {
 
                 if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario === "") {
                     //INSERIR EMAIL E NÚMERO DE TELEFONE
+                    console.log("email e número")
                     try {
                         const jsonUsuario = JSON.stringify(usuario);
                         const usuarioDesestruturado = JSON.parse(jsonUsuario)
@@ -452,7 +453,6 @@ export default function ProfileInfo({ data }) {
 
                     onChangeLogEndereco(data.endereco.logradouro_Endereco);
                     onChangeNumEndereco(data.endereco.numero_Endereco);
-                    onChangeCepEndereco(data.endereco.numero_Endereco);
                     Alert.alert(
                         'Cadastro realizado, favor relogar para aplicar',
                     );
@@ -598,7 +598,7 @@ export default function ProfileInfo({ data }) {
                             <InfoModal>
                                 <Form
                                     // initialData={usuario}
-                                    ref={formEndRef}
+                                    ref={formRef}
                                     onSubmit={editUserInfo}
                                     style={{ width: '100%' }}
                                 >
