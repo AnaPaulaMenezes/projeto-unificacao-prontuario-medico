@@ -81,9 +81,19 @@ margin-right: 20px;
 margin-bottom: 15px;
 display: flex;
 align-content: center;
-background-color: #FDF;
 `;
 
 export const Invisible = styled.View`
 display: none;
+`;
+
+export const ModalData = styled.View`
+width: 300px;
+height: 600px;
+border-radius: 20px;
+text-align: left;
+background-color: #FFF;
+margin-top: 20px;
+margin-bottom: 250px;
+top: 1px;
 `;

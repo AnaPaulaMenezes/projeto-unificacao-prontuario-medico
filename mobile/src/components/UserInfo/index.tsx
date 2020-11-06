@@ -3,7 +3,7 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import { useNavigation, NavigationContainer } from '@react-navigation/native';
 
 
-import { Container, Image, Info, Text, Content, Title, Line, UserInfo, ButtonArea, InfoModal, Invisible } from './styles';
+import { Container, Image, Info, Text, Content, Title, Line, UserInfo, ButtonArea, InfoModal, Invisible, ModalData } from './styles';
 import { SafeAreaView, View, Alert, TouchableHighlight, TextInput, Button, Modal } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Header } from 'react-native/Libraries/NewAppScreen';
@@ -15,6 +15,8 @@ import * as Yup from 'yup';
 import getValidationErrors from '../../utils/getValidationErrors';
 import api from '../../api';
 import { useAuth } from '../../hooks/auth';
+
+
 
 
 interface EditData {
@@ -67,6 +69,7 @@ export default function ProfileInfo({ data }) {
     const [modalVisible2, setModalVisible2] = useState(false);
     const [modalVisible3, setModalVisible3] = useState(false);
     const [name, onChangeName] = React.useState(data.nome_Usuario)
+    const [cpf, onChangeCpf] = React.useState(data.cpf_Usuario)
     const [email, onChangeEmail] = React.useState(data.emails[0]?.endereco_Email ? data.emails[0].endereco_Email : vazio)
     const [tel, onChangeTel] = React.useState(data.telefones[0]?.numero_Telefone ? data.telefones[0]?.numero_Telefone : vazio)
     const [logEndereco, onChangeLogEndereco] = React.useState(data.endereco?.logradouro_Endereco ? data.endereco?.logradouro_Endereco : vazio)
@@ -90,6 +93,7 @@ export default function ProfileInfo({ data }) {
 
     const { usuario } = useAuth();
 
+
     const idTelefone = data.telefones[0]?.Id_Telefone ? data.telefones[0]?.Id_Telefone : null;
     const numTelefone = data.telefones[0]?.numero_Telefone ? data.telefones[0]?.numero_Telefone : null;
     const idEmail = data.emails[0]?.id_Email ? data.emails[0]?.id_Email : "";
@@ -99,9 +103,6 @@ export default function ProfileInfo({ data }) {
     const idEndereco2 = data.endereco?.Id_Endereco;
     const idPaciente = data.paciente?.Id_Paciente
 
-
-    //console.log(data.endereco, "data normal aqui")
-    //console.log(usuario, "usuario")
 
     useEffect(() => {
         // Atualiza o titulo do documento usando a API do browser
@@ -593,15 +594,25 @@ export default function ProfileInfo({ data }) {
                     transparent={true}
                     visible={modalVisible}
                 >
+                <ScrollView>
                     <View style={{ backgroundColor: "#000000aa" }}>
                         <View style={{ alignSelf: "center" }}>
-                            <InfoModal>
+                            <ModalData>
                                 <Form
                                     // initialData={usuario}
                                     ref={formRef}
                                     onSubmit={editUserInfo}
                                     style={{ width: '100%' }}
                                 >
+                                    <Content>
+                                        <Text style={{ marginBottom: 5 }}>CPF</Text>
+                                        <Input style={{}}
+                                            name="cpf"
+                                            placeholder={cpf}
+                                            editable={false}
+                                        />
+                                    </Content>
+                                    <Line></Line>
                                     <Content>
                                         <Text style={{ marginBottom: 5 }}>Nome</Text>
                                         <Input style={{}}
@@ -612,7 +623,7 @@ export default function ProfileInfo({ data }) {
                                     </Content>
                                     <Line></Line>
                                     <Content>
-                                        <Text>Emails</Text>
+                                        <Text style={{ marginBottom: 5 }}>Emails</Text>
                                         <Input style={{}}
                                             ref={emailRef}
                                             name="email_Usuario[0].endereco_Email"
@@ -624,7 +635,7 @@ export default function ProfileInfo({ data }) {
                                     </Content>
                                     <Line></Line>
                                     <Content>
-                                        <Text>Telefone</Text>
+                                        <Text style={{ marginBottom: 5 }}>Telefone</Text>
                                         <Input style={{}}
                                             ref={telRef}
                                             name="telefone_Usuario[0].numero_Telefone"
@@ -649,10 +660,11 @@ export default function ProfileInfo({ data }) {
                                         </Button>
                                     </ButtonArea>
                                 </Form>
-                            </InfoModal>
+                            </ModalData>
 
                         </View>
                     </View>
+                    </ScrollView>
                 </Modal>
             </View>
 
