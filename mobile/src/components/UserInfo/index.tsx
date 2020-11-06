@@ -15,6 +15,7 @@ import * as Yup from 'yup';
 import getValidationErrors from '../../utils/getValidationErrors';
 import api from '../../api';
 import { useAuth } from '../../hooks/auth';
+//import { useForm } from "react-hook-form";
 
 
 
@@ -71,6 +72,7 @@ export default function ProfileInfo({ data }) {
     const [name, onChangeName] = React.useState(data.nome_Usuario)
     const [cpf, onChangeCpf] = React.useState(data.cpf_Usuario)
     const [email, onChangeEmail] = React.useState(data.emails[0]?.endereco_Email ? data.emails[0].endereco_Email : vazio)
+    const [aviso, onChangeAviso] = React.useState("")
     const [tel, onChangeTel] = React.useState(data.telefones[0]?.numero_Telefone ? data.telefones[0]?.numero_Telefone : vazio)
     const [logEndereco, onChangeLogEndereco] = React.useState(data.endereco?.logradouro_Endereco ? data.endereco?.logradouro_Endereco : vazio)
     const [numEndereco, onChangeNumEndereco] = React.useState(data.endereco?.numero_Endereco ? data.endereco?.numero_Endereco : vazio)
@@ -89,9 +91,11 @@ export default function ProfileInfo({ data }) {
     const alergiaRef = useRef<TextInput>(null);
     const obsRef = useRef<TextInput>(null);
     const tipoSangueRef = useRef<TextInput>(null);
+    const mensagemErro = "O e-mail digitado não é válido"
 
 
     const { usuario } = useAuth();
+    //const { register, handleSubmit, errors } = useForm();
 
 
     const idTelefone = data.telefones[0]?.Id_Telefone ? data.telefones[0]?.Id_Telefone : null;
@@ -104,6 +108,15 @@ export default function ProfileInfo({ data }) {
     const idPaciente = data.paciente?.Id_Paciente
 
 
+    const validateEmail = (email: string) => {
+        if (email.indexOf('@') > -1){
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
+
     useEffect(() => {
         // Atualiza o titulo do documento usando a API do browser
         nomeUsuario
@@ -112,17 +125,27 @@ export default function ProfileInfo({ data }) {
     const editUserInfo = useCallback(
         async (data: EditData) => {
             try {
-                // formRef.current?.setErrors({});
+                 formRef.current?.setErrors({});
 
-                // const schema = Yup.object().shape({
-                //     nome_Usuario: Yup.string().required('Nome obrigatório'),
-                //     email_Usuario: Yup.string().email('Digite um e-mail válido'),
-                // });
+                const schema = Yup.object().shape({
+                    endereco_Email: Yup.string().email('Digite um e-mail válido'),
+                });
 
-                // await schema.validate(data, {
-                //     abortEarly: false,
-                // });
+                await schema.validate(data, {
+                    //abortEarly: false,
+                    
+                });
 
+                if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario === "") {
+                    Alert.alert("Nenhuma informação alterada")
+                    return
+                }
+
+                if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
+                    onChangeAviso(mensagemErro)
+                    console.log("aviso", aviso)
+                    return
+                }
 
                 if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario === "") {
                     //INSERIR EMAIL E NÚMERO DE TELEFONE
@@ -247,6 +270,8 @@ export default function ProfileInfo({ data }) {
 
                     }
 
+                    validateEmail(newData.email_Usuario[0].endereco_Email)
+
                     await api.put('users', newData);
                     const json = JSON.stringify(newData);
                     const obj = JSON.parse(json)
@@ -350,6 +375,7 @@ export default function ProfileInfo({ data }) {
 
                 } else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario !== "") {
                     //alterando nome telefone e email
+                    console.log("felicidade")
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
@@ -390,6 +416,8 @@ export default function ProfileInfo({ data }) {
                     Alert.alert("Erro, favor tentar novamente")
                 }
 
+                setModalVisible(false);
+
 
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
@@ -411,7 +439,9 @@ export default function ProfileInfo({ data }) {
     const editAddress = useCallback(
         async (data: EditAddress) => {
             try {
+                console.log(idEndereco2, "Id")
                 if (!idEndereco2) {
+                    console.log(data);
                     const newData = {
                         ...data,
                         Id_Usuario: idUsuario,
@@ -432,10 +462,9 @@ export default function ProfileInfo({ data }) {
                         'Cadastro realizado, favor relogar para aplicar',
                     );
 
-                } else if (data.endereco.logradouro_Endereco === "" || data.endereco.numero_Endereco === "" || data.endereco.bairro_Endereco === "") {
-                    Alert.alert(
-                        'Favor preencher todos campos',
-                    );
+                } else if (data.endereco.logradouro_Endereco === "" || data.endereco.numero_Endereco === "") {
+                    Alert.alert('Favor preencher todos campos',);
+                    return;
                 } else {
                     const newData = {
                         ...data,
@@ -457,9 +486,8 @@ export default function ProfileInfo({ data }) {
                     Alert.alert(
                         'Cadastro realizado, favor relogar para aplicar',
                     );
-
                 }
-                // teste
+                setModalVisible2(false);
 
             } catch (err) {
                 Alert.alert(
@@ -497,6 +525,7 @@ export default function ProfileInfo({ data }) {
                     Alert.alert(
                         'Favor preencher todos campos',
                     );
+                    return
 
                 }else {
                     const newData = {
@@ -522,6 +551,8 @@ export default function ProfileInfo({ data }) {
 
 
                 }
+
+                setModalVisible3(false);
 
             } catch (err) {
                 Alert.alert(
@@ -623,14 +654,15 @@ export default function ProfileInfo({ data }) {
                                     </Content>
                                     <Line></Line>
                                     <Content>
-                                        <Text style={{ marginBottom: 5 }}>Emails</Text>
+                                        <Text style={{ marginBottom: 5 }}>Email</Text>
                                         <Input style={{}}
-                                            ref={emailRef}
                                             name="email_Usuario[0].endereco_Email"
                                             autoCapitalize="words"
                                             returnKeyType="next"
                                             placeholder={email}
+                                            defaultValue={email}
                                         />
+                                        <Text>{aviso}</Text>
 
                                     </Content>
                                     <Line></Line>
@@ -642,6 +674,7 @@ export default function ProfileInfo({ data }) {
                                             autoCapitalize="words"
                                             returnKeyType="next"
                                             placeholder={tel}
+                                            defaultValue={tel}
                                         />
 
                                     </Content>
@@ -649,13 +682,13 @@ export default function ProfileInfo({ data }) {
                                         <Button title="Confirmar"
                                             onPress={() => {
                                                 formRef.current?.submitForm();
-                                                setModalVisible(false);
                                             }}
                                         >
                                         </Button>
                                         <Button title="Cancelar"
                                             onPress={() => {
                                                 setModalVisible(false)
+                                                onChangeAviso("")
                                             }}>
                                         </Button>
                                     </ButtonArea>
@@ -707,7 +740,6 @@ export default function ProfileInfo({ data }) {
                                             <Button title="Confirmar"
                                                 onPress={() => {
                                                     formEndRef.current?.submitForm();
-                                                    setModalVisible2(false);
                                                 }}
                                             >
                                             </Button>
@@ -775,7 +807,6 @@ export default function ProfileInfo({ data }) {
                                             <Button title="Confirmar"
                                                 onPress={() => {
                                                     formPatientRef.current?.submitForm();
-                                                    setModalVisible3(false);
                                                 }}
                                             >
                                             </Button>

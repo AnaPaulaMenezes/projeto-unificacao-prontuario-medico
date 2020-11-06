@@ -89,7 +89,7 @@ display: none;
 
 export const ModalData = styled.View`
 width: 300px;
-height: 600px;
+height: 630px;
 border-radius: 20px;
 text-align: left;
 background-color: #FFF;
