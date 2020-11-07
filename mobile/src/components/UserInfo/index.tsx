@@ -141,15 +141,13 @@ export default function ProfileInfo({ data }) {
                     return
                 }
 
-                if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
-                    onChangeAviso(mensagemErro)
-                    console.log("aviso", aviso)
-                    return
-                }
-
                 if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario === "") {
                     //INSERIR EMAIL E NÚMERO DE TELEFONE
-                    console.log("email e número")
+                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
+                        onChangeAviso(mensagemErro)
+                        console.log("aviso", aviso)
+                        return
+                    }
                     try {
                         const jsonUsuario = JSON.stringify(usuario);
                         const usuarioDesestruturado = JSON.parse(jsonUsuario)
@@ -178,6 +176,7 @@ export default function ProfileInfo({ data }) {
                             onChangeEmail(obj.email_Usuario[0].endereco_Email)
                             onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
                             Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
+                            onChangeAviso("")
 
                         } else {
                             const newData = {
@@ -207,6 +206,7 @@ export default function ProfileInfo({ data }) {
                             onChangeEmail(obj.email_Usuario[0].endereco_Email)
                             onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
                             Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
+                            onChangeAviso("")
                         }
                     } catch {
                         Alert.alert('Erro ao atualizar');
@@ -215,6 +215,13 @@ export default function ProfileInfo({ data }) {
 
                 } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario !== "") {
                     // ALTERANDO APENAS NOME
+
+                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
+                        onChangeAviso(mensagemErro)
+                        console.log("aviso", aviso)
+                        return
+                    }
+
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
@@ -243,10 +250,19 @@ export default function ProfileInfo({ data }) {
                     const obj = JSON.parse(json)
                     onChangeName(obj.nome_Usuario);
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
+                    onChangeAviso("")
 
 
                 } else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario === "") {
                     // ALTERANDO APENAS EMAIL
+
+                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
+                        onChangeAviso(mensagemErro)
+                        console.log("aviso", aviso)
+                        return
+                    }
+
+
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
@@ -277,9 +293,17 @@ export default function ProfileInfo({ data }) {
                     const obj = JSON.parse(json)
                     onChangeEmail(obj.email_Usuario[0].endereco_Email)
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
+                    onChangeAviso("")
 
                 } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario === "") {
                     //ALTERANDO APENAS NUMERO DE TEL
+
+                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
+                        onChangeAviso(mensagemErro)
+                        console.log("aviso", aviso)
+                        return
+                    }
+
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
@@ -308,9 +332,18 @@ export default function ProfileInfo({ data }) {
                     const obj = JSON.parse(json)
                     onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
+                    onChangeAviso("")
 
                 } else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario !== "") {
                     //alterando nome e email
+
+                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
+                        onChangeAviso(mensagemErro)
+                        console.log("aviso", aviso)
+                        return
+                    }
+
+
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
@@ -340,9 +373,18 @@ export default function ProfileInfo({ data }) {
                     onChangeName(obj.nome_Usuario);
                     onChangeEmail(obj.email_Usuario[0].endereco_Email)
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
+                    onChangeAviso("")
 
                 } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario !== "") {
                     //alterando nome e TELEFONE
+
+                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
+                        onChangeAviso(mensagemErro)
+                        console.log("aviso", aviso)
+                        return
+                    }
+
+
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
@@ -372,10 +414,16 @@ export default function ProfileInfo({ data }) {
                     onChangeName(obj.nome_Usuario);
                     onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
+                    onChangeAviso("")
 
                 } else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario !== "") {
                     //alterando nome telefone e email
-                    console.log("felicidade")
+
+                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
+                    onChangeAviso(mensagemErro)
+                    console.log("aviso", aviso)
+                    return
+                    }
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
@@ -406,6 +454,7 @@ export default function ProfileInfo({ data }) {
                     onChangeEmail(obj.email_Usuario[0].endereco_Email)
                     onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
                     Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
+                    onChangeAviso("")
 
                 } else {
                     // console.log("só nome")
@@ -414,6 +463,7 @@ export default function ProfileInfo({ data }) {
                     // const obj = JSON.parse(json)
                     // onChangeName(obj.nome_Usuario);
                     Alert.alert("Erro, favor tentar novamente")
+                    onChangeAviso("")
                 }
 
                 setModalVisible(false);
