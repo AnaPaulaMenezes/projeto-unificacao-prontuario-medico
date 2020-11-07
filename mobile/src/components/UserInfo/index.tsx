@@ -145,7 +145,6 @@ export default function ProfileInfo({ data }) {
                     //INSERIR EMAIL E NÚMERO DE TELEFONE
                     if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
                         onChangeAviso(mensagemErro)
-                        console.log("aviso", aviso)
                         return
                     }
                     try {
@@ -218,7 +217,6 @@ export default function ProfileInfo({ data }) {
 
                     if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
                         onChangeAviso(mensagemErro)
-                        console.log("aviso", aviso)
                         return
                     }
 
@@ -258,7 +256,6 @@ export default function ProfileInfo({ data }) {
 
                     if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
                         onChangeAviso(mensagemErro)
-                        console.log("aviso", aviso)
                         return
                     }
 
@@ -300,7 +297,6 @@ export default function ProfileInfo({ data }) {
 
                     if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
                         onChangeAviso(mensagemErro)
-                        console.log("aviso", aviso)
                         return
                     }
 
@@ -339,7 +335,6 @@ export default function ProfileInfo({ data }) {
 
                     if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
                         onChangeAviso(mensagemErro)
-                        console.log("aviso", aviso)
                         return
                     }
 
@@ -380,7 +375,6 @@ export default function ProfileInfo({ data }) {
 
                     if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
                         onChangeAviso(mensagemErro)
-                        console.log("aviso", aviso)
                         return
                     }
 
@@ -421,7 +415,6 @@ export default function ProfileInfo({ data }) {
 
                     if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
                     onChangeAviso(mensagemErro)
-                    console.log("aviso", aviso)
                     return
                     }
                     const jsonUsuario = JSON.stringify(usuario);
@@ -489,9 +482,7 @@ export default function ProfileInfo({ data }) {
     const editAddress = useCallback(
         async (data: EditAddress) => {
             try {
-                console.log(idEndereco2, "Id")
                 if (!idEndereco2) {
-                    console.log(data);
                     const newData = {
                         ...data,
                         Id_Usuario: idUsuario,
