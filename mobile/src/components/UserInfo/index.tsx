@@ -3,7 +3,7 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import { useNavigation, NavigationContainer } from '@react-navigation/native';
 
 
-import { Container, Image, Info, Text, Content, Title, Line, UserInfo, ButtonArea, InfoModal, Invisible, ModalData } from './styles';
+import { Container, Image, Info, Text, Content, Title, Line, UserInfo, ButtonArea, InfoModal, Invisible, ModalData, ModalAddress } from './styles';
 import { SafeAreaView, View, Alert, TouchableHighlight, TextInput, Button, Modal } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Header } from 'react-native/Libraries/NewAppScreen';
@@ -662,12 +662,12 @@ export default function ProfileInfo({ data }) {
                                             placeholder={email}
                                             defaultValue={email}
                                         />
-                                        <Text>{aviso}</Text>
+                                        <Text style={{color: 'red'}}>{aviso}</Text>
 
                                     </Content>
                                     <Line></Line>
                                     <Content>
-                                        <Text style={{ marginBottom: 5 }}>Telefone</Text>
+                                        <Text style={{ marginBottom: 5 }}>Telefone</Text> 
                                         <Input style={{}}
                                             ref={telRef}
                                             name="telefone_Usuario[0].numero_Telefone"
@@ -711,7 +711,7 @@ export default function ProfileInfo({ data }) {
                     <View style={{ backgroundColor: "#000000aa" }}>
                         <ScrollView>
                             <View style={{ alignSelf: "center" }}>
-                                <InfoModal>
+                                <ModalAddress>
                                     <Form
                                         ref={formEndRef}
                                         onSubmit={editAddress}
@@ -750,7 +750,7 @@ export default function ProfileInfo({ data }) {
                                             </Button>
                                         </ButtonArea>
                                     </Form>
-                                </InfoModal>
+                                </ModalAddress>
 
                             </View>
                         </ScrollView>
