@@ -215,11 +215,6 @@ export default function ProfileInfo({ data }) {
                 } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario !== "") {
                     // ALTERANDO APENAS NOME
 
-                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
-                        onChangeAviso(mensagemErro)
-                        return
-                    }
-
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
@@ -295,11 +290,6 @@ export default function ProfileInfo({ data }) {
                 } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario === "") {
                     //ALTERANDO APENAS NUMERO DE TEL
 
-                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
-                        onChangeAviso(mensagemErro)
-                        return
-                    }
-
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
                     const newData = {
@@ -372,12 +362,6 @@ export default function ProfileInfo({ data }) {
 
                 } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario !== "") {
                     //alterando nome e TELEFONE
-
-                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
-                        onChangeAviso(mensagemErro)
-                        return
-                    }
-
 
                     const jsonUsuario = JSON.stringify(usuario);
                     const usuarioDesestruturado = JSON.parse(jsonUsuario)
