@@ -2,7 +2,7 @@ import styled from 'styled-components/native';
 
 
 
-export const Container= styled.View`
+export const Container = styled.View`
 background-color: #A0C9D9;
 `;
 
@@ -29,7 +29,7 @@ background-color: #dcdcdc;
 
 export const InfoModal = styled.View`
 width: 300px;
-height: 500px;
+min-height: 500px;
 border-radius: 20px;
 text-align: left;
 background-color: #FFF;
@@ -89,7 +89,7 @@ display: none;
 
 export const ModalData = styled.View`
 width: 300px;
-height: 630px;
+min-height: 630px;
 border-radius: 20px;
 text-align: left;
 background-color: #FFF;
@@ -100,11 +100,11 @@ top: 1px;
 
 export const ModalAddress = styled.View`
 width: 300px;
-height: 350px;
+min-height: 350px;
 border-radius: 20px;
 text-align: left;
 background-color: #FFF;
-margin-top: 150px;
+margin-top: 20px;
 margin-bottom: 250px;
 top: 1px;
 `;

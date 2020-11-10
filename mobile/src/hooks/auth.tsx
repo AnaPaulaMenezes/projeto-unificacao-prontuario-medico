@@ -10,9 +10,64 @@ import api from '../api';
 import { Alert } from 'react-native';
 
 
+interface Usuario {
+
+  Id_Usuario: number,
+  nome_Usuario: string,
+  cpf_Usuario: string,
+  rg_Usuario: string,
+  dtNascimento_Usuario: Date,
+  dtCriacao_Usuario: Date,
+  dtAlteracao_Usuario: Date,
+  emails: [
+    {
+      id_Email: number,
+      endereco_Email: string,
+      Id_Usuario: number,
+      dtCriacao_Email: Date,
+      dtAlteracao_Email: Date,
+      codTipo_Email: number
+    }
+  ],
+  telefones: [{
+    Id_Telefone: Number,
+    numero_Telefone: string,
+    codTipo_Telefone: string,
+    Id_Usuario: Number,
+    dtAlteracao_Telefone: Date
+  }],
+  endereco: {
+    Id_Endereco: number,
+    cep_Endereco: string,
+    logradouro_Endereco: string,
+    numero_Endereco: 12,
+    bairro_Endereco: string,
+    cidade_Endereco: string,
+    estado_Endereco: string,
+    pais_Endereco: string,
+    complemento_Endereco: string,
+    Id_Usuario: number,
+    dtCriacao_Endereco: Date,
+    dtAlteracao_Endereco: Date
+  },
+  paciente: {
+    Id_Paciente: Number,
+    tipoSanguineo_Paciente: string,
+    altura_Paciente: Number,
+    peso_Paciente: Number,
+    obs_Paciente: string,
+    alergias_Paciente: string,
+    doencasCronicas_Paciente: string,
+    remediosContinuos_Paciente: string,
+    Id_Usuario: Number,
+    dtCriacao_Paciente: Date,
+    dtAlteracao_Paciente: Date
+  }
+}
+
 interface AuthState {
   token: string;
-  usuario: object;
+  usuario: Usuario;
 }
 
 interface LogInCredentials {
@@ -21,10 +76,11 @@ interface LogInCredentials {
 }
 
 interface AuthContextData {
-  usuario: object;
+  usuario: Usuario;
   loading: boolean;
   logIn(credentials: LogInCredentials): Promise<void>;
   signOut(): void;
+  updateUser(usuario: Usuario): Promise<void>;
 }
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
@@ -37,7 +93,7 @@ const AuthProvider: React.FC = ({ children }) => {
       '@project:token',
 
     );
-   // console.log(token)
+    // console.log(token)
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -101,8 +157,20 @@ const AuthProvider: React.FC = ({ children }) => {
     setData({} as AuthState);
   }, []);
 
+  const updateUser = useCallback(
+    async (usuario: Usuario) => {
+      await AsyncStorage.setItem('@project:usuario', JSON.stringify(usuario));
+
+      setData({
+        token: data.token,
+        usuario,
+      });
+    },
+    [setData, data.token],
+  );
+
   return (
-    <AuthContext.Provider value={{ usuario: data.usuario, loading, logIn, signOut }}>
+    <AuthContext.Provider value={{ usuario: data.usuario, loading, logIn, signOut, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

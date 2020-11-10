@@ -1,4 +1,4 @@
-function maskCPF(value: string): string{
+function maskCPF(value: string): string {
   value = value.replace(/\D/g, ''); //Retira tudo que não é numero
   value = value.replace(/^(\d{3})(\d)/g, "$1.$2"); //Separa por blocos
   value = value.replace(/(\d{3})(\d)/, "$1.$2"); //Separa por blocos
@@ -7,23 +7,23 @@ function maskCPF(value: string): string{
   return value;
 }
 
-function maskPhone(value: string): string{
+function maskPhone(value: string): string {
   value = value.replace(/\D/g, '');
   value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
   value = value.replace(/(\d)(\d{4})$/, '$1-$2');
   return value;
 }
 
-function maskRG(value: string): string{
-  value=value.replace(/[^\dX]/g,"");
-	value=value.replace(/(\d{2})(\d)/,"$1.$2");
-	value=value.replace(/(\d{3})(\d)/,"$1.$2");
-	value=value.replace(/(\d{3})([\dX]{1,2})$/,"$1-$2");
+function maskRG(value: string): string {
+  value = value.replace(/[^\dX]/g, "");
+  value = value.replace(/(\d{2})(\d)/, "$1.$2");
+  value = value.replace(/(\d{3})(\d)/, "$1.$2");
+  value = value.replace(/(\d{3})([\dX]{1,2})$/, "$1-$2");
 
   return value;
 }
 
-function maskDate(value: string): string{
+function maskDate(value: string): string {
   value = value.replace(/\D/g, '');
   value = value.replace(/^(\d{2})(\d)/g, "$1/$2");
   value = value.replace(/(\d{2})(\d)/, "$1/$2");
@@ -31,12 +31,21 @@ function maskDate(value: string): string{
   return value;
 }
 
-function getRawValue(value: string): string{
+function maskCEP(value: string): string {
+  value = value.replace(/\D/g, '');
+  value = value.replace(/^([\d]{5})-*([\d])/, "$1-$2");
+  value = value.replace(/^([\d]{5})-*([\d]{3})(\d)/, "$1-$2");
 
-  value=value.replace(/[^\dX]/g,"");
+
+  return value;
+}
+
+function getRawValue(value: string): string {
+
+  value = value.replace(/[^\dX]/g, "");
 
   return value;
 }
 
 
-export  {maskCPF, maskPhone, maskRG, maskDate,getRawValue}
+export { maskCPF, maskPhone, maskRG, maskDate, getRawValue, maskCEP }

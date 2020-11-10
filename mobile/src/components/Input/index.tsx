@@ -9,12 +9,13 @@ import React, {
 import { TextInputProps } from 'react-native';
 import { useField } from '@unform/core';
 import { Container, TextInput } from './styles';
-import {maskCPF, maskPhone, maskRG, maskDate,getRawValue} from '../../utils/masks';
+import { maskCPF, maskPhone, maskRG, maskDate, getRawValue, maskCEP } from '../../utils/masks';
 
 interface InputProps extends TextInputProps {
   name: string;
   icon?: string;
-  mask?: 'date' | 'cpf' | 'rg' | 'phone' ;
+  mask?: 'date' | 'cpf' | 'rg' | 'phone' | 'cep';
+  value?: string;
 }
 
 interface InputValueReference {
@@ -26,16 +27,49 @@ interface InputRef {
 }
 
 const Input: React.RefForwardingComponent<InputRef, InputProps> = (
-  { name, icon , mask, ...rest },
+  { name, icon, value, mask, ...rest },
   ref,
 ) => {
   const inputElementRef = useRef<any>(null);
-  const { registerField, defaultValue = '', fieldName, error } = useField(name);
+  const { registerField, defaultValue = value || '', fieldName, error } = useField(name);
   const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
-  const [textValue,setTextValue] = useState('');
-  const [rawValue,setRawValue] = useState('');
+
+
+  const retornaTextoMascarado = (mask: string) => {
+    const text = defaultValue
+    let maskedValue = '';
+    if (mask) {
+      switch (mask) {
+        case 'cpf':
+          maskedValue = maskCPF(text);
+          break;
+
+        case 'rg':
+          maskedValue = maskRG(text);
+          break;
+
+        case 'phone':
+          maskedValue = maskPhone(text);
+          break;
+
+        case 'date':
+          maskedValue = maskDate(text);
+
+          break;
+        case 'cep':
+          maskedValue = maskCEP(text);
+          break;
+      }
+
+      return maskedValue;
+    }
+  }
+
+  const [textValue, setTextValue] = useState(mask ? retornaTextoMascarado(mask) : value);
+  const [rawValue, setRawValue] = useState(defaultValue);
+
 
 
   const handleOnChange = useCallback(
@@ -59,17 +93,20 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
             maskedValue = maskDate(text);
             text = maskedValue;
             break;
+          case 'cep':
+            maskedValue = maskCEP(text);
+            break;
         }
         setTextValue(maskedValue);
         setRawValue(getRawValue(maskedValue));
-      }else {
+      } else {
         setTextValue(text);
         setRawValue(text);
       }
     },
 
 
-    [rawValue,textValue],
+    [rawValue, textValue],
   );
 
   const handleInputFocus = useCallback(() => {
@@ -97,7 +134,9 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
 
     inputValueRef.current.value = rawValue;
 
-  }, [fieldName, registerField,rawValue]);
+
+
+  }, [fieldName, registerField, rawValue]);
 
   return (
     <Container isFocused={isFocused} isErrored={!!error}>
@@ -113,7 +152,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
         keyboardAppearance="dark"
         placeholderTextColor="#666360"
         defaultValue={defaultValue}
-        onChangeText={(text) => {handleOnChange(text)}}
+        onChangeText={(text) => { handleOnChange(text) }}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
       />

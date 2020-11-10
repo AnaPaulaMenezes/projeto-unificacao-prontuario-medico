@@ -1,13 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Icon from 'react-native-vector-icons/AntDesign'
-import { useNavigation, NavigationContainer } from '@react-navigation/native';
-
-
-import { Container, Image, Info, Text, Content, Title, Line, UserInfo, ButtonArea, InfoModal, Invisible, ModalData, ModalAddress } from './styles';
+import { useNavigation } from '@react-navigation/native';
+import { Info, Text, Content, Title, Line, UserInfo, ButtonArea, InfoModal, Invisible, ModalData, ModalAddress } from './styles';
 import { SafeAreaView, View, Alert, TouchableHighlight, TextInput, Button, Modal } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Header } from 'react-native/Libraries/NewAppScreen';
-import { List } from 'src/pages/History/styles';
 import Input from '../Input';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
@@ -15,843 +10,747 @@ import * as Yup from 'yup';
 import getValidationErrors from '../../utils/getValidationErrors';
 import api from '../../api';
 import { useAuth } from '../../hooks/auth';
-//import { useForm } from "react-hook-form";
-
-
-
+import DatePicker from 'react-native-datepicker';
+import { format, parseISO, startOfHour } from 'date-fns';
 
 interface EditData {
-    nome_Usuario: string;
-    email_Usuario: [
-        {
-            id_Email: number,
-            endereco_Email: string;
-            codTipo_Email: number;
-        },
-    ];
-    telefone_Usuario: [
-        {
-            Id_Usuario: number,
-            Id_Telefone: number,
-            numero_Telefone: string,
-            codTipo_Telefone: number,
-        },
-    ];
+  nome_Usuario: string;
+  cpf_Usuario: string;
+  email1_Usuario: string;
+  telefone1_Usuario: string;
+  senha_Usuario: string
+  novaSenha_Usuario: string
 };
 
 interface EditAddress {
-    Id_Endereco: number;
-    Id_Usuario: number;
-    logradouro_Endereco: string;
-    cep_Endereco: number;
-    numero_Endereco: string;
-    bairro_Endereco: string;
-    cidade_Endereco: string;
-    estado_Endereco: string;
-    pais_Endereco: string;
-    complemento_Endereco: string;
+  Id_Endereco: number;
+  Id_Usuario: number;
+  logradouro_Endereco: string;
+  cep_Endereco: number;
+  numero_Endereco: string;
+  bairro_Endereco: string;
+  cidade_Endereco: string;
+  estado_Endereco: string;
+  pais_Endereco: string;
+  complemento_Endereco: string;
 };
 
 interface EditPatient {
-    Id_Paciente: number,
-    tipoSanguineo_Paciente: string,
-    altura_Paciente: number,
-    peso_Paciente: string,
-    obs_Paciente: string,
-    alergias_Paciente: string,
-    doencasCronicas_Paciente: string,
-    remediosContinuos_Paciente: string
+  Id_Paciente: number,
+  tipoSanguineo_Paciente: string,
+  altura_Paciente: number,
+  peso_Paciente: string,
+  obs_Paciente: string,
+  alergias_Paciente: string,
+  doencasCronicas_Paciente: string,
+  remediosContinuos_Paciente: string
 }
 
 export default function ProfileInfo({ data }) {
-    const navigation = useNavigation();
-    const vazio = "Vazio";
-    const [modalVisible, setModalVisible] = useState(false);
-    const [modalVisible2, setModalVisible2] = useState(false);
-    const [modalVisible3, setModalVisible3] = useState(false);
-    const [name, onChangeName] = React.useState(data.nome_Usuario)
-    const [cpf, onChangeCpf] = React.useState(data.cpf_Usuario)
-    const [email, onChangeEmail] = React.useState(data.emails[0]?.endereco_Email ? data.emails[0].endereco_Email : vazio)
-    const [aviso, onChangeAviso] = React.useState("")
-    const [tel, onChangeTel] = React.useState(data.telefones[0]?.numero_Telefone ? data.telefones[0]?.numero_Telefone : vazio)
-    const [logEndereco, onChangeLogEndereco] = React.useState(data.endereco?.logradouro_Endereco ? data.endereco?.logradouro_Endereco : vazio)
-    const [numEndereco, onChangeNumEndereco] = React.useState(data.endereco?.numero_Endereco ? data.endereco?.numero_Endereco : vazio)
-    const [bairroEndereco, onChangeBairroEndereco] = React.useState(data.endereco?.bairro_Endereco ? data.endereco?.bairro_Endereco : vazio)
-    const [alergiaPatient, onChangeAlergiaPatient] = React.useState(data.paciente?.alergias_Paciente ? data.paciente?.alergias_Paciente : vazio)
-    const [obsPatient, onChangeObsPatient] = React.useState(data.paciente?.obs_Paciente ? data.paciente?.obs_Paciente : vazio)
-    const [tipoSangue, onChangeTipoSangue] = React.useState(data.paciente?.tipoSanguineo_Paciente ? data.paciente?.tipoSanguineo_Paciente : vazio)
-    const nameRef = useRef<TextInput>(data.nome_Usuario);
-    const formRef = useRef<FormHandles>(null);
-    const formEndRef = useRef<FormHandles>(null);
-    const formPatientRef = useRef<FormHandles>(null);
-    const telRef = useRef<TextInput>(null);
-    const emailRef = useRef<TextInput>(null);
-    const logRef = useRef<TextInput>(null);
-    const numEndRef = useRef<TextInput>(null);
-    const alergiaRef = useRef<TextInput>(null);
-    const obsRef = useRef<TextInput>(null);
-    const tipoSangueRef = useRef<TextInput>(null);
-    const mensagemErro = "O e-mail digitado não é válido"
+  const navigation = useNavigation();
+  const { usuario, updateUser } = useAuth();
 
+  const getSelectedData = async (): Promise<any> => {
+    let state: unknown;
 
-    const { usuario } = useAuth();
-    //const { register, handleSubmit, errors } = useForm();
+    await setSelectedData((currentState) => {
+      state = currentState;
 
-
-    const idTelefone = data.telefones[0]?.Id_Telefone ? data.telefones[0]?.Id_Telefone : null;
-    const numTelefone = data.telefones[0]?.numero_Telefone ? data.telefones[0]?.numero_Telefone : null;
-    const idEmail = data.emails[0]?.id_Email ? data.emails[0]?.id_Email : "";
-    const endEmail = data.emails[0]?.endereco_Email ? data.emails[0]?.endereco_Email : "";
-    const nomeUsuario = data.nome_Usuario;
-    const idUsuario = data.Id_Usuario;
-    const idEndereco2 = data.endereco?.Id_Endereco;
-    const idPaciente = data.paciente?.Id_Paciente
-
-
-    const validateEmail = (email: string) => {
-        if (email.indexOf('@') > -1){
-            return true;
-        }else{
-            return false;
-        }
-        
-    }
-
-    useEffect(() => {
-        // Atualiza o titulo do documento usando a API do browser
-        nomeUsuario
+      return currentState;
     });
 
-    const editUserInfo = useCallback(
-        async (data: EditData) => {
-            try {
-                 formRef.current?.setErrors({});
-
-                const schema = Yup.object().shape({
-                    endereco_Email: Yup.string().email('Digite um e-mail válido'),
-                });
-
-                await schema.validate(data, {
-                    //abortEarly: false,
-                    
-                });
-
-                if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario === "") {
-                    Alert.alert("Nenhuma informação alterada")
-                    return
-                }
-
-                if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario === "") {
-                    //INSERIR EMAIL E NÚMERO DE TELEFONE
-                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
-                        onChangeAviso(mensagemErro)
-                        return
-                    }
-                    try {
-                        const jsonUsuario = JSON.stringify(usuario);
-                        const usuarioDesestruturado = JSON.parse(jsonUsuario)
-                        if (!idTelefone && !idEmail && data.nome_Usuario === "") {
-                            const newData = {
-                                ...data,
-                                nome_Usuario: nomeUsuario,
-                                email_Usuario: [
-                                    {
-                                        endereco_Email: data.email_Usuario[0].endereco_Email,
-                                        codTipo_Email: 1
-                                    },
-                                ],
-                                telefone_Usuario: [
-                                    {
-                                        Id_Usuario: usuarioDesestruturado.Id_Usuario,
-                                        numero_Telefone: data.telefone_Usuario[0].numero_Telefone,
-                                        codTipo_Telefone: 1,
-                                    },
-                                ],
-
-                            }
-                            await api.put('users', newData);
-                            const json = JSON.stringify(newData);
-                            const obj = JSON.parse(json)
-                            onChangeEmail(obj.email_Usuario[0].endereco_Email)
-                            onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
-                            Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
-                            onChangeAviso("")
-
-                        } else {
-                            const newData = {
-
-                                ...data, email_Usuario: [
-                                    {
-                                        id_Email: idEmail,
-                                        endereco_Email: data.email_Usuario[0].endereco_Email,
-                                        codTipo_Email: 1
-                                    },
-                                ],
-                                telefone_Usuario: [
-                                    {
-                                        Id_Usuario: usuarioDesestruturado.Id_Usuario,
-                                        Id_Telefone: idTelefone,
-                                        numero_Telefone: data.telefone_Usuario[0].numero_Telefone,
-                                        codTipo_Telefone: 1,
-                                    },
-                                ],
-
-                            }
-
-                            await api.put('users', newData);
-                            const json = JSON.stringify(data);
-                            const obj = JSON.parse(json)
-                            onChangeName(obj.nome_Usuario);
-                            onChangeEmail(obj.email_Usuario[0].endereco_Email)
-                            onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
-                            Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
-                            onChangeAviso("")
-                        }
-                    } catch {
-                        Alert.alert('Erro ao atualizar');
-                    }
-
-
-                } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario !== "") {
-                    // ALTERANDO APENAS NOME
-
-                    const jsonUsuario = JSON.stringify(usuario);
-                    const usuarioDesestruturado = JSON.parse(jsonUsuario)
-                    const newData = {
-
-                        ...data,
-                        nome_Usuario: data.nome_Usuario,
-                        email_Usuario: [
-                            {
-                                id_Email: idEmail,
-                                endereco_Email: endEmail,
-                                codTipo_Email: 1
-                            },
-                        ],
-                        telefone_Usuario: [
-                            {
-                                Id_Usuario: usuarioDesestruturado.Id_Usuario,
-                                Id_Telefone: idTelefone,
-                                numero_Telefone: numTelefone,
-                                codTipo_Telefone: 1,
-                            },
-                        ],
-
-                    }
-                    await api.put('users', newData);
-                    const json = JSON.stringify(newData);
-                    const obj = JSON.parse(json)
-                    onChangeName(obj.nome_Usuario);
-                    Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
-                    onChangeAviso("")
-
-
-                } else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario === "") {
-                    // ALTERANDO APENAS EMAIL
-
-                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
-                        onChangeAviso(mensagemErro)
-                        return
-                    }
-
-
-                    const jsonUsuario = JSON.stringify(usuario);
-                    const usuarioDesestruturado = JSON.parse(jsonUsuario)
-                    const newData = {
-                        ...data,
-                        nome_Usuario: nomeUsuario,
-                        email_Usuario: [
-                            {
-                                id_Email: idEmail,
-                                endereco_Email: data.email_Usuario[0].endereco_Email,
-                                codTipo_Email: 1
-                            },
-                        ],
-                        telefone_Usuario: [
-                            {
-                                Id_Usuario: usuarioDesestruturado.Id_Usuario,
-                                Id_Telefone: idTelefone,
-                                numero_Telefone: numTelefone,
-                                codTipo_Telefone: 1,
-                            },
-                        ],
-
-                    }
-
-                    validateEmail(newData.email_Usuario[0].endereco_Email)
-
-                    await api.put('users', newData);
-                    const json = JSON.stringify(newData);
-                    const obj = JSON.parse(json)
-                    onChangeEmail(obj.email_Usuario[0].endereco_Email)
-                    Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
-                    onChangeAviso("")
-
-                } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario === "") {
-                    //ALTERANDO APENAS NUMERO DE TEL
-
-                    const jsonUsuario = JSON.stringify(usuario);
-                    const usuarioDesestruturado = JSON.parse(jsonUsuario)
-                    const newData = {
-                        ...data,
-                        nome_Usuario: nomeUsuario,
-                        email_Usuario: [
-                            {
-                                id_Email: idEmail,
-                                endereco_Email: endEmail,
-                                codTipo_Email: 1
-                            },
-                        ],
-                        telefone_Usuario: [
-                            {
-                                Id_Usuario: usuarioDesestruturado.Id_Usuario,
-                                Id_Telefone: idTelefone,
-                                numero_Telefone: data.telefone_Usuario[0].numero_Telefone,
-                                codTipo_Telefone: 1,
-                            },
-                        ],
-
-                    }
-
-                    await api.put('users', newData);
-                    const json = JSON.stringify(newData);
-                    const obj = JSON.parse(json)
-                    onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
-                    Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
-                    onChangeAviso("")
-
-                } else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone === "" && data.nome_Usuario !== "") {
-                    //alterando nome e email
-
-                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
-                        onChangeAviso(mensagemErro)
-                        return
-                    }
-
-
-                    const jsonUsuario = JSON.stringify(usuario);
-                    const usuarioDesestruturado = JSON.parse(jsonUsuario)
-                    const newData = {
-                        ...data,
-                        nome_Usuario: data.nome_Usuario,
-                        email_Usuario: [
-                            {
-                                id_Email: idEmail,
-                                endereco_Email: data.email_Usuario[0].endereco_Email,
-                                codTipo_Email: 1
-                            },
-                        ],
-                        telefone_Usuario: [
-                            {
-                                Id_Usuario: usuarioDesestruturado.Id_Usuario,
-                                Id_Telefone: idTelefone,
-                                numero_Telefone: numTelefone,
-                                codTipo_Telefone: 1,
-                            },
-                        ],
-
-                    }
-
-                    await api.put('users', newData);
-                    const json = JSON.stringify(newData);
-                    const obj = JSON.parse(json)
-                    onChangeName(obj.nome_Usuario);
-                    onChangeEmail(obj.email_Usuario[0].endereco_Email)
-                    Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
-                    onChangeAviso("")
-
-                } else if (data.email_Usuario[0].endereco_Email === "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario !== "") {
-                    //alterando nome e TELEFONE
-
-                    const jsonUsuario = JSON.stringify(usuario);
-                    const usuarioDesestruturado = JSON.parse(jsonUsuario)
-                    const newData = {
-                        ...data,
-                        nome_Usuario: data.nome_Usuario,
-                        email_Usuario: [
-                            {
-                                id_Email: idEmail,
-                                endereco_Email: endEmail,
-                                codTipo_Email: 1
-                            },
-                        ],
-                        telefone_Usuario: [
-                            {
-                                Id_Usuario: usuarioDesestruturado.Id_Usuario,
-                                Id_Telefone: idTelefone,
-                                numero_Telefone: data.telefone_Usuario[0].numero_Telefone,
-                                codTipo_Telefone: 1,
-                            },
-                        ],
-
-                    }
-
-                    await api.put('users', newData);
-                    const json = JSON.stringify(newData);
-                    const obj = JSON.parse(json)
-                    onChangeName(obj.nome_Usuario);
-                    onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
-                    Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
-                    onChangeAviso("")
-
-                } else if (data.email_Usuario[0].endereco_Email !== "" && data.telefone_Usuario[0].numero_Telefone !== "" && data.nome_Usuario !== "") {
-                    //alterando nome telefone e email
-
-                    if (validateEmail(data.email_Usuario[0].endereco_Email) === false){
-                    onChangeAviso(mensagemErro)
-                    return
-                    }
-                    const jsonUsuario = JSON.stringify(usuario);
-                    const usuarioDesestruturado = JSON.parse(jsonUsuario)
-                    const newData = {
-                        ...data,
-                        nome_Usuario: data.nome_Usuario,
-                        email_Usuario: [
-                            {
-                                id_Email: idEmail,
-                                endereco_Email: data.email_Usuario[0].endereco_Email,
-                                codTipo_Email: 1
-                            },
-                        ],
-                        telefone_Usuario: [
-                            {
-                                Id_Usuario: usuarioDesestruturado.Id_Usuario,
-                                Id_Telefone: idTelefone,
-                                numero_Telefone: data.telefone_Usuario[0].numero_Telefone,
-                                codTipo_Telefone: 1,
-                            },
-                        ],
-
-                    }
-
-                    await api.put('users', newData);
-                    const json = JSON.stringify(newData);
-                    const obj = JSON.parse(json)
-                    onChangeName(obj.nome_Usuario);
-                    onChangeEmail(obj.email_Usuario[0].endereco_Email)
-                    onChangeTel(obj.telefone_Usuario[0].numero_Telefone)
-                    Alert.alert("Atualização efetuada com sucesso. Por favor, relogue.")
-                    onChangeAviso("")
-
-                } else {
-                    // console.log("só nome")
-                    // await api.put('users', name);
-                    // const json = JSON.stringify(name);
-                    // const obj = JSON.parse(json)
-                    // onChangeName(obj.nome_Usuario);
-                    Alert.alert("Erro, favor tentar novamente")
-                    onChangeAviso("")
-                }
-
-                setModalVisible(false);
-
-
-            } catch (err) {
-                if (err instanceof Yup.ValidationError) {
-                    const errors = getValidationErrors(err);
-                    formRef.current?.setErrors(errors);
-                    return;
-
-                }
-                Alert.alert(
-                    'Erro ao cadastrar',
-                    err.message ? err.message : 'Ocorreu um erro ao editar informações, tente novamente.',
-                );
-
-            }
-        },
-        [navigation],
-    );
-
-    const editAddress = useCallback(
-        async (data: EditAddress) => {
-            try {
-                if (!idEndereco2) {
-                    const newData = {
-                        ...data,
-                        Id_Usuario: idUsuario,
-                        logradouro_Endereco: data.endereco.logradouro_Endereco ? data.endereco.logradouro_Endereco : "",
-                        cep_Endereco: data.cep_Endereco ? data.cep_Endereco : "",
-                        numero_Endereco: data.endereco.numero_Endereco ? data.endereco.numero_Endereco : "",
-                        bairro_Endereco: data.bairro_Endereco ? data.bairro_Endereco : "",
-                        cidade_Endereco: data.cidade_Endereco ? data.cidade_Endereco : "",
-                        estado_Endereco: data.estado_Endereco ? data.estado_Endereco : "",
-                        pais_Endereco: data.pais_Endereco ? data.pais_Endereco : "",
-                        complemento_Endereco: data.complemento_Endereco ? data.complemento_Endereco : "",
-                    }
-                    await api.post('users/endereco', newData);
-                   // console.log(newData, "newdata aqui")
-                    onChangeLogEndereco(data.endereco.logradouro_Endereco);
-                    onChangeNumEndereco(data.endereco.numero_Endereco);
-                    Alert.alert(
-                        'Cadastro realizado, favor relogar para aplicar',
-                    );
-
-                } else if (data.endereco.logradouro_Endereco === "" || data.endereco.numero_Endereco === "") {
-                    Alert.alert('Favor preencher todos campos',);
-                    return;
-                } else {
-                    const newData = {
-                        ...data,
-                        Id_Endereco: idEndereco2,
-                        Id_Usuario: idUsuario,
-                        logradouro_Endereco: data.endereco.logradouro_Endereco,
-                        cep_Endereco: 123123,
-                        numero_Endereco: data.endereco.numero_Endereco,
-                        bairro_Endereco: data.endereco.bairro_Endereco,
-                        cidade_Endereco: data.cidade_Endereco ? data.cidade_Endereco : "",
-                        estado_Endereco: data.estado_Endereco ? data.estado_Endereco : "",
-                        pais_Endereco: data.pais_Endereco ? data.pais_Endereco : "",
-                        complemento_Endereco: data.complemento_Endereco ? data.complemento_Endereco : "",
-                    }
-                    await api.put('users/endereco', newData);
-
-                    onChangeLogEndereco(data.endereco.logradouro_Endereco);
-                    onChangeNumEndereco(data.endereco.numero_Endereco);
-                    Alert.alert(
-                        'Cadastro realizado, favor relogar para aplicar',
-                    );
-                }
-                setModalVisible2(false);
-
-            } catch (err) {
-                Alert.alert(
-                    'Erro ao cadastrar',
-                    err.message ? err.message : 'Ocorreu um erro ao fazer cadastro, tente novamente.',
-                );
-
-            }
-        },
-        [navigation],
-    );
-
-    const editPatient = useCallback(
-        async (data: EditPatient) => {
-            try {
-                if (!idPaciente) {
-                    const newData = {
-                        ...data,
-                        Id_Paciente: idPaciente,
-                        tipoSanguineo_Paciente: data.tipoSanguineo_Paciente,
-                        altura_Paciente: 0,
-                        peso_Paciente: 0,
-                        obs_Paciente: data.obs_Paciente,
-                        alergias_Paciente: data.alergias_Paciente,
-                        doencasCronicas_Paciente: "",
-                        remediosContinuos_Paciente: "",
-                    }
-                    await api.post('users/paciente', newData);
-
-                    Alert.alert(
-                        'Cadastro realizado, favor relogar para aplicar',
-                    );
-
-                } else if(data.obs_Paciente === "" || data.peso_Paciente === "" || data.tipoSanguineo_Paciente === ""){
-                    Alert.alert(
-                        'Favor preencher todos campos',
-                    );
-                    return
-
-                }else {
-                    const newData = {
-                        ...data,
-                        Id_Paciente: idPaciente,
-                        tipoSanguineo_Paciente: data.tipoSanguineo_Paciente,
-                        altura_Paciente: 0,
-                        peso_Paciente: 0,
-                        obs_Paciente: data.obs_Paciente,
-                        alergias_Paciente: data.alergias_Paciente,
-                        doencasCronicas_Paciente: "",
-                        remediosContinuos_Paciente: "",
-                    }
-                    
-                    await api.put('users/paciente', newData);
-                    onChangeObsPatient(data.obs_Paciente)
-                    onChangeAlergiaPatient(data.alergias_Paciente)
-                    onChangeTipoSangue(data.tipoSanguineo_Paciente)
-
-                    Alert.alert(
-                        'Cadastro realizado, favor relogar para aplicar',
-                    );
-
-
-                }
-
-                setModalVisible3(false);
-
-            } catch (err) {
-                Alert.alert(
-                    'Erro ao cadastrar',
-                    err.message ? err.message : 'Ocorreu um erro ao fazer cadastro, tente novamente.',
-                );
-
-            }
-        },
-        [navigation],
-    );
-
-
-
-    return (
-        <><SafeAreaView>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                {/* <Image source={require("../../assets/download.png")}></Image> */}
-                <View style={{ alignSelf: "center" }}>
-                    <Title></Title>
-                    <Info>
-                        <Content>
-                            <UserInfo>Informações Hospitalares</UserInfo>
-                        </Content>
-                        <Line></Line>
-
-                        <ButtonArea>
-                            <Button onPress={() => { setModalVisible3(true) }}
-                                title="Editar"
-                            >
-                            </Button>
-                        </ButtonArea>
-                    </Info>
-                </View>
-                <View style={{ alignSelf: "center" }}>
-                    <Title></Title>
-                    <Info>
-                        <Content>
-                            <UserInfo>Dados pessoais</UserInfo>
-                        </Content>
-                        <Line></Line>
-                        <ButtonArea>
-                            <Button onPress={() => { setModalVisible(true) }}
-                                title="Editar"
-                            >
-                            </Button>
-                        </ButtonArea>
-                    </Info>
-                </View>
-                <View style={{ alignSelf: "center" }}>
-                    <Title> </Title>
-                    <Info>
-                        <Content>
-                            <UserInfo>Endereço</UserInfo>
-                        </Content>
-                        <Line></Line>
-                        <ButtonArea>
-                            <Button onPress={() => { setModalVisible2(true) }}
-                                title="Editar"
-                            >
-                            </Button>
-                        </ButtonArea>
-                    </Info>
-                </View>
+    return state;
+  };
+
+  const retornaDataNascimento = () => {
+    if (usuario.dtNascimento_Usuario) {
+      return format(parseISO(usuario.dtNascimento_Usuario.toString()), 'dd-MM-yyyy');
+    }
+    return '';
+  }
+
+  const InitialUserData = {
+    nome_Usuario: usuario.nome_Usuario,
+    cpf_Usuario: usuario.cpf_Usuario,
+    rg_Usuario: usuario.rg_Usuario,
+    dtNascimento_Usuario: usuario.dtNascimento_Usuario,
+    email1_Usuario: usuario.emails[0].endereco_Email,
+    telefone1_Usuario: usuario.telefones[0]?.numero_Telefone
+  }
+
+  const InitialAddressData = {
+    Id_Endereco: usuario.endereco?.Id_Endereco,
+    Id_Usuario: usuario.Id_Usuario,
+    logradouro_Endereco: usuario.endereco?.logradouro_Endereco,
+    cep_Endereco: usuario.endereco?.cep_Endereco,
+    numero_Endereco: usuario.endereco?.numero_Endereco,
+    bairro_Endereco: usuario.endereco?.bairro_Endereco,
+    cidade_Endereco: usuario.endereco?.cidade_Endereco,
+    estado_Endereco: usuario.endereco?.estado_Endereco,
+    pais_Endereco: usuario.endereco?.pais_Endereco,
+    complemento_Endereco: usuario.endereco?.complemento_Endereco,
+  }
+
+  const InitialPatientData = {
+    Id_Paciente: usuario.paciente.Id_Paciente,
+    tipoSanguineo_Paciente: usuario.paciente.tipoSanguineo_Paciente,
+    altura_Paciente: usuario.paciente.altura_Paciente?.toString(),
+    peso_Paciente: usuario.paciente.peso_Paciente?.toString(),
+    obs_Paciente: usuario.paciente.obs_Paciente,
+    alergias_Paciente: usuario.paciente.alergias_Paciente,
+    doencasCronicas_Paciente: usuario.paciente.doencasCronicas_Paciente,
+    remediosContinuos_Paciente: usuario.paciente.remediosContinuos_Paciente
+  }
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible2, setModalVisible2] = useState(false);
+  const [modalVisible3, setModalVisible3] = useState(false);
+  const [aviso, onChangeAviso] = React.useState("")
+  const [selectedData, setSelectedData] = useState(retornaDataNascimento());
+
+  //Forms refs
+  const formRef = useRef<FormHandles>(null);
+  const formEndRef = useRef<FormHandles>(null);
+  const formPatientRef = useRef<FormHandles>(null);
+
+  //usuario refs
+  const nameRef = useRef<TextInput>(null);
+  const cpfRef = useRef<TextInput>(null);
+  const dtNascRef = useRef<TextInput>(null);
+  const senhaAtualRef = useRef<TextInput>(null);
+  const senhaNovaRef = useRef<TextInput>(null);
+  const senhaconfirmaRef = useRef<TextInput>(null);
+  const rgRef = useRef<TextInput>(null);
+  const telRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>(null);
+
+  //enderoco refs
+  const cepEndRef = useRef<TextInput>(null);
+  const logRef = useRef<TextInput>(null);
+  const numEndRef = useRef<TextInput>(null);
+  const bairroEndRef = useRef<TextInput>(null);
+  const cidadeEndRef = useRef<TextInput>(null);
+  const estadoEndRef = useRef<TextInput>(null);
+  const complementoEndRef = useRef<TextInput>(null);
+
+  //paciente refs
+  const alturaRef = useRef<TextInput>(null);
+  const pesoRef = useRef<TextInput>(null);
+  const doencasRef = useRef<TextInput>(null);
+  const remediosRef = useRef<TextInput>(null);
+  const alergiaRef = useRef<TextInput>(null);
+  const obsRef = useRef<TextInput>(null);
+  const tipoSangueRef = useRef<TextInput>(null);
+
+  useEffect(() => { console.log(selectedData) }, [])
+  const editUserInfo = useCallback(
+    async (data: EditData) => {
+      try {
+
+        formRef.current?.setErrors({});
+
+        const schema = Yup.object().shape({
+          nome_Usuario: Yup.string().required('Nome obrigatório'),
+          email1_Usuario: Yup.string().email('Digite um e-mail válido'),
+          senha_Usuario: Yup.string(),
+          novaSenha_Usuario: Yup.string().when('senha_Usuario', {
+            is: val => !!val.length,
+            then: Yup.string().required('Campo obrigatório'),
+            otherwise: Yup.string(),
+          }),
+          confirmarSenha_Usuario: Yup.string()
+            .when('senha_Usuario', {
+              is: val => !!val.length,
+              then: Yup.string().required('Campo obrigatório'),
+              otherwise: Yup.string(),
+            })
+            .oneOf([Yup.ref('novaSenha_Usuario'), undefined], 'Confirmação incorreta')
+
+        });
+
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+
+        //formatar data de nascimento para o padrao yyyy/mm/dd
+        const DataSelecionada = await getSelectedData();
+
+        const DtNasc = DataSelecionada.split('/')
+        console.log(DtNasc.length)
+        const formatedNasc = DtNasc.length === 3
+          ? `${DtNasc[2]}-${DtNasc[1].slice(-2)}-${DtNasc[0].slice(-2)}`
+          : new Date();
+
+
+        const formatedData = {
+          nome_Usuario: data.nome_Usuario,
+          dtNascimento_Usuario: formatedNasc,
+          senha_Usuario: data.senha_Usuario,
+          novaSenha_Usuario: data.novaSenha_Usuario,
+
+          email_Usuario: [{
+            id_Email: usuario.emails[0].id_Email,
+            endereco_Email: data.email1_Usuario,
+            codTipo_Email: 1
+          },
+          ],
+
+          telefone_Usuario: [{
+            Id_Telefone: usuario.telefones[0]?.Id_Telefone ? usuario.telefones[0].Id_Telefone : null,
+            numero_Telefone: data.telefone1_Usuario,
+            codTipo_Telefone: 1
+          }]
+        }
+        console.log('formatedData', formatedData)
+
+        const response = await api.put('/users', formatedData);
+
+        await updateUser(response.data);
+
+        setModalVisible(false)
+
+        Alert.alert(
+          '',
+          'Alteração Realizada com Sucesso',
+        );
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+
+        Alert.alert(
+          'Erro ao cadastrar',
+          err.message ? err.message : 'Ocorreu um erro ao editar usuario, tente novamente.',
+        );
+
+      }
+    }
+    , []);
+
+
+  const editAddress = useCallback(async (data: EditAddress) => {
+    try {
+      console.log(data)
+      formEndRef.current?.setErrors({});
+
+      const schema = Yup.object().shape({
+        cep_Endereco: Yup.string().required('CEP obrigatório'),
+        logradouro_Endereco: Yup.string().required('Logradouro obrigatório'),
+        numero_Endereco: Yup.string().required('Numero obrigatório'),
+        bairro_Endereco: Yup.string().required('Bairro obrigatório'),
+        cidade_Endereco: Yup.string().required('Cidade obrigatório'),
+        estado_Endereco: Yup.string().required('Estado obrigatório'),
+
+      });
+
+      await schema.validate(data, {
+        abortEarly: false,
+      });
+
+      const formatedData = {
+        Id_Endereco: usuario.endereco?.Id_Endereco ? usuario.endereco.Id_Endereco : null,
+        Id_Usuario: usuario.Id_Usuario,
+        logradouro_Endereco: data.logradouro_Endereco,
+        cep_Endereco: data.cep_Endereco,
+        numero_Endereco: data.numero_Endereco,
+        bairro_Endereco: data.bairro_Endereco,
+        cidade_Endereco: data.cidade_Endereco,
+        estado_Endereco: data.estado_Endereco,
+        pais_Endereco: 'Brasil',
+        complemento_Endereco: data.complemento_Endereco,
+      }
+      console.log('formatedData', formatedData);
+
+      let response;
+
+      //Se tem id edita, senão cria o endereco
+      if (formatedData.Id_Endereco) {
+        response = await api.put('/users/endereco', formatedData);
+      } else {
+        response = await api.post('/users/endereco', formatedData);
+      }
+
+      updateUser({ ...usuario, endereco: response.data })
+      setModalVisible2(false);
+
+      Alert.alert(
+        '',
+        'Alteração Realizada com Sucesso',
+      );
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(err);
+        formEndRef.current?.setErrors(errors);
+        return;
+      }
+
+      Alert.alert(
+        'Erro ao cadastrar',
+        err.message ? err.message : 'Ocorreu um erro ao editar o endereço, tente novamente.',
+      );
+
+    }
+  }, []);
+
+  const editPatient = useCallback(async (data: EditPatient) => {
+    try {
+      console.log(data)
+      formPatientRef.current?.setErrors({});
+
+      const schema = Yup.object().shape({
+
+      });
+
+      await schema.validate(data, {
+        abortEarly: false,
+      });
+
+      const formatedData = {
+        Id_Paciente: usuario.paciente.Id_Paciente,
+        tipoSanguineo_Paciente: data.tipoSanguineo_Paciente,
+        altura_Paciente: Number(data.altura_Paciente),
+        peso_Paciente: Number(data.peso_Paciente),
+        obs_Paciente: data.obs_Paciente,
+        alergias_Paciente: data.alergias_Paciente,
+        doencasCronicas_Paciente: data.doencasCronicas_Paciente,
+        remediosContinuos_Paciente: data.remediosContinuos_Paciente
+      }
+      console.log('formatedData', formatedData);
+
+      const response = await api.put('/users/paciente', formatedData);
+
+      updateUser({ ...usuario, paciente: response.data })
+
+      setModalVisible3(false);
+
+      Alert.alert(
+        '',
+        'Alteração Realizada com Sucesso',
+      );
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(err);
+        formEndRef.current?.setErrors(errors);
+        return;
+      }
+
+      Alert.alert(
+        'Erro ao cadastrar',
+        err.message ? err.message : 'Ocorreu um erro ao editar o endereço, tente novamente.',
+      );
+    }
+  }, []);
+
+
+  return (
+    <>
+      <SafeAreaView>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={{ alignSelf: "center" }}>
+            <Title>Editar informações</Title>
+            <Info>
+              <Content>
+                <UserInfo>Informações Hospitalares</UserInfo>
+              </Content>
+              <Line></Line>
+
+              <ButtonArea>
+                <Button onPress={() => { setModalVisible3(true) }}
+                  title="Editar"
+                >
+                </Button>
+              </ButtonArea>
+            </Info>
+          </View>
+          <View style={{ alignSelf: "center" }}>
+            <Title></Title>
+            <Info>
+              <Content>
+                <UserInfo>Dados pessoais</UserInfo>
+              </Content>
+              <Line></Line>
+              <ButtonArea>
+                <Button onPress={() => { setModalVisible(true) }}
+                  title="Editar"
+                >
+                </Button>
+              </ButtonArea>
+            </Info>
+          </View>
+          <View style={{ alignSelf: "center" }}>
+            <Title> </Title>
+            <Info>
+              <Content>
+                <UserInfo>Endereço</UserInfo>
+              </Content>
+              <Line></Line>
+              <ButtonArea>
+                <Button onPress={() => { setModalVisible2(true) }}
+                  title="Editar"
+                >
+                </Button>
+              </ButtonArea>
+            </Info>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+      <View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+        >
+          <ScrollView>
+            <View style={{ backgroundColor: "#000000aa" }}>
+              <View style={{ alignSelf: "center" }}>
+                <ModalData>
+                  <Form
+                    initialData={InitialUserData}
+                    ref={formRef}
+                    onSubmit={editUserInfo}
+                    style={{ width: '100%' }}
+                  >
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>CPF</Text>
+                      <Input
+                        name="cpf_Usuario"
+                        placeholder="CPF"
+                        editable={false}
+                        mask="cpf"
+                        ref={cpfRef}
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>RG</Text>
+                      <Input
+                        name="rg_Usuario"
+                        placeholder="RG"
+                        editable={false}
+                        mask="rg"
+                        ref={rgRef}
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Nome</Text>
+                      <Input
+                        ref={nameRef}
+                        name="nome_Usuario"
+                        placeholder="Nome"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+
+                      <Text style={{ marginBottom: 5 }}>Data Nascimento</Text>
+                      <DatePicker
+                        style={{ width: '100%' }}
+                        mode="date"
+                        format="DD/MM/yyyy"
+                        date={selectedData}
+                        onDateChange={(value) => {
+                          console.log(value)
+                          setSelectedData(value)
+                        }}
+                      ></DatePicker>
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Senha Atual</Text>
+                      <Input
+                        ref={senhaAtualRef}
+                        name="senha_Usuario"
+                        placeholder="Senha Atual"
+                        secureTextEntry
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Nova Senha</Text>
+                      <Input
+                        ref={senhaNovaRef}
+                        name="novaSenha_Usuario"
+                        placeholder="Nova Senha"
+                        secureTextEntry
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Confirmar Senha</Text>
+                      <Input
+                        ref={senhaconfirmaRef}
+                        name="confirmarSenha_Usuario"
+                        placeholder="Confirmar Senha"
+                      />
+                    </Content>
+
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>E-mail</Text>
+                      <Input
+                        name="email1_Usuario"
+                        autoCapitalize="words"
+                        returnKeyType="next"
+                        placeholder="E-mail"
+                        ref={emailRef}
+                      />
+                      <Text style={{ color: 'red' }}>{aviso}</Text>
+
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Telefone</Text>
+                      <Input
+                        ref={telRef}
+                        name="telefone1_Usuario"
+                        autoCapitalize="words"
+                        returnKeyType="next"
+                        placeholder="Telefone"
+                        mask="phone"
+                      />
+                    </Content>
+                    <ButtonArea style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                      <Button title="Confirmar"
+                        onPress={() => {
+                          formRef.current?.submitForm();
+                        }}
+                      >
+                      </Button>
+                      <Button title="Cancelar"
+                        onPress={() => {
+                          setModalVisible(false)
+                          onChangeAviso("")
+                        }}>
+                      </Button>
+                    </ButtonArea>
+                  </Form>
+                </ModalData>
+
+              </View>
+            </View>
+          </ScrollView>
+        </Modal>
+      </View>
+
+      <View>
+        <Modal
+          ////Endereco////
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible2}
+        >
+          <View style={{ backgroundColor: "#000000aa" }}>
+            <ScrollView>
+              <View style={{ alignSelf: "center" }}>
+                <ModalAddress>
+                  <Form
+                    ref={formEndRef}
+                    initialData={InitialAddressData}
+                    onSubmit={editAddress}
+                    style={{ width: '100%' }}
+                  >
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>CEP</Text>
+                      <Input
+                        ref={cepEndRef}
+                        name="cep_Endereco"
+                        placeholder="CEP"
+                        mask="cep"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Rua</Text>
+                      <Input
+                        ref={logRef}
+                        name="logradouro_Endereco"
+                        placeholder="Logradouro"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Número</Text>
+                      <Input
+                        ref={numEndRef}
+                        name="numero_Endereco"
+                        autoCapitalize="words"
+                        returnKeyType="next"
+                        placeholder="Número"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Bairro</Text>
+                      <Input
+                        ref={bairroEndRef}
+                        name="bairro_Endereco"
+                        placeholder="Bairro"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Cidade</Text>
+                      <Input
+                        ref={cidadeEndRef}
+                        name="cidade_Endereco"
+                        placeholder="Cidade"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Estado</Text>
+                      <Input
+                        ref={estadoEndRef}
+                        name="estado_Endereco"
+                        placeholder="Estado"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Complemento</Text>
+                      <Input
+                        ref={complementoEndRef}
+                        name="complemento_Endereco"
+                        placeholder="Complemento"
+                      />
+                    </Content>
+
+                    <ButtonArea style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                      <Button title="Confirmar"
+                        onPress={() => {
+                          formEndRef.current?.submitForm();
+                        }}
+                      >
+                      </Button>
+                      <Button title="Cancelar"
+                        onPress={() => {
+                          setModalVisible2(false)
+                        }}>
+                      </Button>
+                    </ButtonArea>
+                  </Form>
+                </ModalAddress>
+
+              </View>
             </ScrollView>
-        </SafeAreaView>
-            <View>
-                <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={modalVisible}
-                >
-                <ScrollView>
-                    <View style={{ backgroundColor: "#000000aa" }}>
-                        <View style={{ alignSelf: "center" }}>
-                            <ModalData>
-                                <Form
-                                    // initialData={usuario}
-                                    ref={formRef}
-                                    onSubmit={editUserInfo}
-                                    style={{ width: '100%' }}
-                                >
-                                    <Content>
-                                        <Text style={{ marginBottom: 5 }}>CPF</Text>
-                                        <Input style={{}}
-                                            name="cpf"
-                                            placeholder={cpf}
-                                            editable={false}
-                                        />
-                                    </Content>
-                                    <Line></Line>
-                                    <Content>
-                                        <Text style={{ marginBottom: 5 }}>Nome</Text>
-                                        <Input style={{}}
-                                            ref={nameRef}
-                                            name="nome_Usuario"
-                                            placeholder={name}
-                                        />
-                                    </Content>
-                                    <Line></Line>
-                                    <Content>
-                                        <Text style={{ marginBottom: 5 }}>Email</Text>
-                                        <Input style={{}}
-                                            name="email_Usuario[0].endereco_Email"
-                                            autoCapitalize="words"
-                                            returnKeyType="next"
-                                            placeholder={email}
-                                            defaultValue={email}
-                                        />
-                                        <Text style={{color: 'red'}}>{aviso}</Text>
+          </View>
+        </Modal>
+      </View>
+      <View>
+        <Modal
+          /// Paciente ///
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible3}
 
-                                    </Content>
-                                    <Line></Line>
-                                    <Content>
-                                        <Text style={{ marginBottom: 5 }}>Telefone</Text> 
-                                        <Input style={{}}
-                                            ref={telRef}
-                                            name="telefone_Usuario[0].numero_Telefone"
-                                            autoCapitalize="words"
-                                            returnKeyType="next"
-                                            placeholder={tel}
-                                            defaultValue={tel}
-                                        />
-
-                                    </Content>
-                                    <ButtonArea style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                                        <Button title="Confirmar"
-                                            onPress={() => {
-                                                formRef.current?.submitForm();
-                                            }}
-                                        >
-                                        </Button>
-                                        <Button title="Cancelar"
-                                            onPress={() => {
-                                                setModalVisible(false)
-                                                onChangeAviso("")
-                                            }}>
-                                        </Button>
-                                    </ButtonArea>
-                                </Form>
-                            </ModalData>
-
-                        </View>
-                    </View>
-                    </ScrollView>
-                </Modal>
-            </View>
-
-            <View>
-                <Modal
-                    //////////////////////////////////////////////////////////// AQUIIIIIIIII
-                    animationType="slide"
-                    transparent={true}
-                    visible={modalVisible2}
-                >
-                    <View style={{ backgroundColor: "#000000aa" }}>
-                        <ScrollView>
-                            <View style={{ alignSelf: "center" }}>
-                                <ModalAddress>
-                                    <Form
-                                        ref={formEndRef}
-                                        onSubmit={editAddress}
-                                        style={{ width: '100%' }}
-                                    >
-                                        <Content>
-                                            <Text style={{ marginBottom: 5 }}>Rua</Text>
-                                            <Input style={{}}
-                                                ref={logRef}
-                                                name="endereco.logradouro_Endereco"
-                                                placeholder={logEndereco}
-                                            />
-                                        </Content>
-                                        <Line></Line>
-                                        <Content>
-                                            <Text style={{ marginBottom: 5 }}>Número</Text>
-                                            <Input style={{}}
-                                                ref={numEndRef}
-                                                name="endereco.numero_Endereco"
-                                                autoCapitalize="words"
-                                                returnKeyType="next"
-                                                placeholder={numEndereco}
-                                            />
-                                        </Content>
-                                        <ButtonArea style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                                            <Button title="Confirmar"
-                                                onPress={() => {
-                                                    formEndRef.current?.submitForm();
-                                                }}
-                                            >
-                                            </Button>
-                                            <Button title="Cancelar"
-                                                onPress={() => {
-                                                    setModalVisible2(false)
-                                                }}>
-                                            </Button>
-                                        </ButtonArea>
-                                    </Form>
-                                </ModalAddress>
-
-                            </View>
-                        </ScrollView>
-                    </View>
-                </Modal>
-            </View>
-            <View>
-                <Modal
-                    //////////////////////////////////////////////////////////// ultimo
-                    animationType="slide"
-                    transparent={true}
-                    visible={modalVisible3}
-                >
-                    <View style={{ backgroundColor: "#000000aa" }}>
-                        <ScrollView>
-                            <View style={{ alignSelf: "center" }}>
-                                <InfoModal>
-                                    <Form
-                                        ref={formPatientRef}
-                                        onSubmit={editPatient}
-                                        style={{ width: '100%' }}
-                                    >
-                                        <Content>
-                                            <Text style={{ marginBottom: 5 }}>Observação Paciente</Text>
-                                            <Input style={{}}
-                                                ref={obsRef}
-                                                name="obs_Paciente"
-                                                placeholder={obsPatient}
-                                            />
-                                        </Content>
-                                        <Line></Line>
-                                        <Content>
-                                            <Text style={{ marginBottom: 5 }}>Alergias</Text>
-                                            <Input style={{}}
-                                                ref={alergiaRef}
-                                                name="alergias_Paciente"
-                                                autoCapitalize="words"
-                                                returnKeyType="next"
-                                                placeholder={alergiaPatient}
-                                            />
-                                        </Content>
-                                        <Line></Line>
-                                        <Content>
-                                            <Text style={{ marginBottom: 5 }}>Tipo Sanguíneo</Text>
-                                            <Input style={{}}
-                                                ref={tipoSangueRef}
-                                                name="tipoSanguineo_Paciente"
-                                                autoCapitalize="words"
-                                                returnKeyType="next"
-                                                placeholder={tipoSangue}
-                                            />
-                                        </Content>
-                                        <ButtonArea style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                                            <Button title="Confirmar"
-                                                onPress={() => {
-                                                    formPatientRef.current?.submitForm();
-                                                }}
-                                            >
-                                            </Button>
-                                            <Button title="Cancelar"
-                                                onPress={() => {
-                                                    setModalVisible3(false)
-                                                }}>
-                                            </Button>
-                                        </ButtonArea>
-                                    </Form>
-                                </InfoModal>
-
-                            </View>
-                        </ScrollView>
-                    </View>
-                </Modal>
-            </View>
-
-        </>
-
-
-    );
+        >
+          <View style={{ backgroundColor: "#000000aa" }}>
+            <ScrollView>
+              <View style={{ alignSelf: "center" }}>
+                <InfoModal>
+                  <Form
+                    ref={formPatientRef}
+                    onSubmit={editPatient}
+                    style={{ width: '100%' }}
+                    initialData={InitialPatientData}
+                  >
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Altura</Text>
+                      <Input
+                        ref={alturaRef}
+                        name="altura_Paciente"
+                        keyboardType="numeric"
+                        returnKeyType="next"
+                        placeholder="Altura"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Peso</Text>
+                      <Input
+                        ref={pesoRef}
+                        name="peso_Paciente"
+                        keyboardType="numeric"
+                        returnKeyType="next"
+                        placeholder="Peso"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Alergias</Text>
+                      <Input
+                        ref={alergiaRef}
+                        name="alergias_Paciente"
+                        autoCapitalize="words"
+                        returnKeyType="next"
+                        placeholder="Alergias"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Doenças Crônicas</Text>
+                      <Input
+                        ref={doencasRef}
+                        name="doencasCronicas_Paciente"
+                        autoCapitalize="words"
+                        returnKeyType="next"
+                        placeholder="Doenças Crônicas"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Remédios Contínuos</Text>
+                      <Input
+                        ref={remediosRef}
+                        name="remediosContinuos_Paciente"
+                        autoCapitalize="words"
+                        returnKeyType="next"
+                        placeholder="Remédios Contínuos"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Tipo Sanguíneo</Text>
+                      <Input
+                        ref={tipoSangueRef}
+                        name="tipoSanguineo_Paciente"
+                        autoCapitalize="words"
+                        returnKeyType="next"
+                        placeholder="Tipo sanguineo"
+                      />
+                    </Content>
+                    <Line></Line>
+                    <Content>
+                      <Text style={{ marginBottom: 5 }}>Observação Paciente</Text>
+                      <Input
+                        ref={obsRef}
+                        name="obs_Paciente"
+                        placeholder="Observações"
+                      />
+                    </Content>
+                    <ButtonArea style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                      <Button title="Confirmar"
+                        onPress={() => {
+                          formPatientRef.current?.submitForm();
+                        }}
+                      >
+                      </Button>
+                      <Button title="Cancelar"
+                        onPress={() => {
+                          setModalVisible3(false)
+                        }}>
+                      </Button>
+                    </ButtonArea>
+                  </Form>
+                </InfoModal>
+              </View>
+            </ScrollView>
+          </View>
+        </Modal>
+      </View>
+    </>
+  );
 }
