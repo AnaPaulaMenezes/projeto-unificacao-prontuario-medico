@@ -24,6 +24,7 @@ import { FormHandles } from '@unform/core';
 import { format } from 'date-fns';
 import Picker, { ListValue } from '../../components/Picker';
 import parseISO from 'date-fns/parseISO'
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -61,6 +62,7 @@ const CadastroConsulta: React.FC = () => {
   const estabelecimentoRef = useRef<TextInput>(null);
   const dataRef = useRef<TextInput>(null);
   const horaRef = useRef<TextInput>(null);
+  const navigation = useNavigation();
 
   const [selectedData, setSelectedData] = useState('');
   const [selectedValue, setSelectedValue] = useState("0");
@@ -272,6 +274,9 @@ const CadastroConsulta: React.FC = () => {
         const response = await api.post('/consultas', newData);
 
         Alert.alert('Consulta agendada', 'Consulta agendada com sucesso');
+
+        navigation.goBack();
+        
       }
       catch (err) {
 
