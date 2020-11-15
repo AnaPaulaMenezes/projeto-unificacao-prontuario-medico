@@ -109,7 +109,7 @@ const AuthProvider: React.FC = ({ children }) => {
   }, async function (error) {
 
     if (error?.response?.status === 401) {
-      Alert.alert('Sessão expirada', 'Favor refaça seu Login');
+
       signOut();
       return error;
       ;

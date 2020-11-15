@@ -74,7 +74,7 @@ export default function ProfileInfo({ data }) {
     cpf_Usuario: usuario.cpf_Usuario,
     rg_Usuario: usuario.rg_Usuario,
     dtNascimento_Usuario: usuario.dtNascimento_Usuario,
-    email1_Usuario: usuario.emails[0].endereco_Email,
+    email1_Usuario: usuario.emails[0]?.endereco_Email,
     telefone1_Usuario: usuario.telefones[0]?.numero_Telefone
   }
 
@@ -189,7 +189,7 @@ export default function ProfileInfo({ data }) {
           novaSenha_Usuario: data.novaSenha_Usuario,
 
           email_Usuario: [{
-            id_Email: usuario.emails[0].id_Email,
+            id_Email: usuario.emails[0]?.id_Email ? usuario.emails[0].id_Email : null,
             endereco_Email: data.email1_Usuario,
             codTipo_Email: 1
           },
@@ -201,7 +201,7 @@ export default function ProfileInfo({ data }) {
             codTipo_Telefone: 1
           }]
         }
-        console.log('formatedData', formatedData)
+
 
         const response = await api.put('/users', formatedData);
 

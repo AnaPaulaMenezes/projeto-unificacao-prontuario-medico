@@ -42,7 +42,7 @@ function maskCEP(value: string): string {
 
 function getRawValue(value: string): string {
 
-  value = value.replace(/[^\dX]/g, "");
+  value = value.replace(/[^\dXx]/g, "");
 
   return value;
 }

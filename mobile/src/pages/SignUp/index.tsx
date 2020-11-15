@@ -69,7 +69,7 @@ const SignUp: React.FC = () => {
 
           throw new Error('CPF Inválido');
         }
-
+        let response
         if (data.email_Usuario) {
           const newData = {
             ...data, email_Usuario: [{
@@ -77,17 +77,26 @@ const SignUp: React.FC = () => {
               codTipo_Email: 1
             }]
           }
-          await api.post('/users', newData);
+          response = await api.post('/users', newData);
         } else {
-          await api.post('/users', data);
+          response = await api.post('/users', data);
         }
-
+        console.log(data)
         navigation.goBack();
 
-        Alert.alert(
-          'Cadastro realizado',
-          'Você já pode fazer seu login na aplicação',
-        );
+        if (response.status === 200) {
+          Alert.alert(
+            'Cadastro realizado',
+            'Você já pode fazer seu login na aplicação',
+          );
+        } else {
+          console.log(response)
+          Alert.alert(
+            'Erro ao realizar cadastro',
+            response.data,
+          );
+        }
+
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -108,90 +117,90 @@ const SignUp: React.FC = () => {
   return (
     <>
 
-          <Container>
-            <Title>Faça seu cadastro</Title>
+      <Container>
+        <Title>Faça seu cadastro</Title>
 
-            <Form
-              ref={formRef}
-              onSubmit={handleSignUp}
-              style={{ width: '100%' }}
-            >
-              <Input
-                ref={nameRef}
-                name="nome_Usuario"
-                autoCapitalize="words"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  CPFRef.current?.focus();
-                }}
-                placeholder="Nome Completo"
-              />
+        <Form
+          ref={formRef}
+          onSubmit={handleSignUp}
+          style={{ width: '100%' }}
+        >
+          <Input
+            ref={nameRef}
+            name="nome_Usuario"
+            autoCapitalize="words"
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              CPFRef.current?.focus();
+            }}
+            placeholder="Nome Completo"
+          />
 
-              <Input
-                ref={CPFRef}
-                mask="cpf"
-                maxLength={14}
-                name="cpf_Usuario"
-                keyboardType="numeric"
-                autoCorrect={false}
-                autoCapitalize="none"
-                placeholder="CPF"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  RGRef.current?.focus();
-                }}
-              />
+          <Input
+            ref={CPFRef}
+            mask="cpf"
+            maxLength={14}
+            name="cpf_Usuario"
+            keyboardType="numeric"
+            autoCorrect={false}
+            autoCapitalize="none"
+            placeholder="CPF"
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              RGRef.current?.focus();
+            }}
+          />
 
-              <Input
-                ref={RGRef}
-                mask="rg"
-                maxLength={12}
-                name="rg_Usuario"
-                autoCorrect={false}
-                autoCapitalize="none"
-                placeholder="RG"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  emailRef.current?.focus();
-                }}
-              />
+          <Input
+            ref={RGRef}
+            mask="rg"
+            maxLength={12}
+            name="rg_Usuario"
+            autoCorrect={false}
+            autoCapitalize="none"
+            placeholder="RG"
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              emailRef.current?.focus();
+            }}
+          />
 
 
 
-              <Input
-                ref={emailRef}
-                name="email_Usuario"
-                keyboardType="email-address"
-                autoCorrect={false}
-                autoCapitalize="none"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  passwordRef.current?.focus();
-                }}
-                placeholder="E-mail"
-              />
+          <Input
+            ref={emailRef}
+            name="email_Usuario"
+            keyboardType="email-address"
+            autoCorrect={false}
+            autoCapitalize="none"
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              passwordRef.current?.focus();
+            }}
+            placeholder="E-mail"
+          />
 
-              <Input
-                name="senha_Usuario"
-                ref={passwordRef}
-                secureTextEntry
-                textContentType="newPassword"
-                returnKeyType="send"
-                onSubmitEditing={() => {
-                  formRef.current?.submitForm();
-                }}
-                placeholder="Senha"
-              />
+          <Input
+            name="senha_Usuario"
+            ref={passwordRef}
+            secureTextEntry
+            textContentType="newPassword"
+            returnKeyType="send"
+            onSubmitEditing={() => {
+              formRef.current?.submitForm();
+            }}
+            placeholder="Senha"
+          />
 
-              <Button
-                onPress={() => {
-                  formRef.current?.submitForm();
-                }}
-              >
-                Cadastrar
+          <Button
+            onPress={() => {
+              formRef.current?.submitForm();
+            }}
+          >
+            Cadastrar
               </Button>
-            </Form>
-          </Container>
+        </Form>
+      </Container>
 
     </>
   );
