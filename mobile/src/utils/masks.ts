@@ -15,10 +15,10 @@ function maskPhone(value: string): string {
 }
 
 function maskRG(value: string): string {
-  value = value.replace(/[^\dX]/g, "");
+  value = value.replace(/[^\dXx]/g, "");
   value = value.replace(/(\d{2})(\d)/, "$1.$2");
   value = value.replace(/(\d{3})(\d)/, "$1.$2");
-  value = value.replace(/(\d{3})([\dX]{1,2})$/, "$1-$2");
+  value = value.replace(/(\d{3})([\dXx]{1,2})$/, "$1-$2");
 
   return value;
 }
