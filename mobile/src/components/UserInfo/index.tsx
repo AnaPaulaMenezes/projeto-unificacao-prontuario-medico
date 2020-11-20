@@ -142,7 +142,7 @@ export default function ProfileInfo({ data }) {
   const obsRef = useRef<TextInput>(null);
   const tipoSangueRef = useRef<TextInput>(null);
 
-  useEffect(() => { console.log(selectedData) }, [])
+
   const editUserInfo = useCallback(
     async (data: EditData) => {
       try {
@@ -176,7 +176,7 @@ export default function ProfileInfo({ data }) {
         const DataSelecionada = await getSelectedData();
 
         const DtNasc = DataSelecionada.split('/')
-        console.log(DtNasc.length)
+
         const formatedNasc = DtNasc.length === 3
           ? `${DtNasc[2]}-${DtNasc[1].slice(-2)}-${DtNasc[0].slice(-2)}`
           : new Date();
@@ -232,7 +232,7 @@ export default function ProfileInfo({ data }) {
 
   const editAddress = useCallback(async (data: EditAddress) => {
     try {
-      console.log(data)
+
       formEndRef.current?.setErrors({});
 
       const schema = Yup.object().shape({
@@ -261,7 +261,7 @@ export default function ProfileInfo({ data }) {
         pais_Endereco: 'Brasil',
         complemento_Endereco: data.complemento_Endereco,
       }
-      console.log('formatedData', formatedData);
+
 
       let response;
 
@@ -272,7 +272,7 @@ export default function ProfileInfo({ data }) {
         response = await api.post('/users/endereco', formatedData);
       }
 
-      updateUser({ ...usuario, endereco: response.data })
+      await updateUser({ ...usuario, endereco: response.data })
       setModalVisible2(false);
 
       Alert.alert(
@@ -292,11 +292,10 @@ export default function ProfileInfo({ data }) {
       );
 
     }
-  }, []);
+  }, [usuario]);
 
   const editPatient = useCallback(async (data: EditPatient) => {
     try {
-      console.log(data)
       formPatientRef.current?.setErrors({});
 
       const schema = Yup.object().shape({
@@ -317,11 +316,11 @@ export default function ProfileInfo({ data }) {
         doencasCronicas_Paciente: data.doencasCronicas_Paciente,
         remediosContinuos_Paciente: data.remediosContinuos_Paciente
       }
-      console.log('formatedData', formatedData);
+
 
       const response = await api.put('/users/paciente', formatedData);
 
-      updateUser({ ...usuario, paciente: response.data })
+      await updateUser({ ...usuario, paciente: response.data })
 
       setModalVisible3(false);
 
@@ -341,7 +340,7 @@ export default function ProfileInfo({ data }) {
         err.message ? err.message : 'Ocorreu um erro ao editar o endereço, tente novamente.',
       );
     }
-  }, []);
+  }, [usuario]);
 
 
   return (
@@ -452,7 +451,7 @@ export default function ProfileInfo({ data }) {
                         format="DD/MM/yyyy"
                         date={selectedData}
                         onDateChange={(value) => {
-                          console.log(value)
+
                           setSelectedData(value)
                         }}
                       ></DatePicker>
@@ -484,6 +483,7 @@ export default function ProfileInfo({ data }) {
                         ref={senhaconfirmaRef}
                         name="confirmarSenha_Usuario"
                         placeholder="Confirmar Senha"
+                        secureTextEntry
                       />
                     </Content>
 
@@ -510,6 +510,7 @@ export default function ProfileInfo({ data }) {
                         returnKeyType="next"
                         placeholder="Telefone"
                         mask="phone"
+                        maxLength={15}
                       />
                     </Content>
                     <ButtonArea style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
