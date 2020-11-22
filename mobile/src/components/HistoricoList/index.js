@@ -11,7 +11,7 @@ import { Container, Nome, Stats, Stat, Title, Descricao } from './styles';
 export default function HistoricoList({ data, selectItem }) {
   const navigation = useNavigation();
   var form = new Date(data.dt_consulta);
-  var formattedate = format(form, "dd/MM/yyyy hh:mm");
+  var formattedate = format(form, "dd/MM/yyyy HH:mm");
   return (
     <TouchableOpacity onLongPress={() => { selectItem(data) }}>
 

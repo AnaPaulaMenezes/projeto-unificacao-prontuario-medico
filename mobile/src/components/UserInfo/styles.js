@@ -25,6 +25,7 @@ height: 150px;
 border-radius: 20px;
 text-align: left;
 background-color: #dcdcdc;
+margin-bottom: 25px;
 `;
 
 export const InfoModal = styled.View`
@@ -51,11 +52,14 @@ margin-right: 15px;
 `;
 
 export const Title = styled.Text`
-margin-top: 30px;
-margin-bottom: 15px;
-text-align: center;
-
+flex: 1;
+padding: 12px 15px;
+font-size: 28px;
+margin-top:25px;
+margin-bottom:25px;
+color: #ffff;
 `;
+
 
 export const Line = styled.View`
 border: 1px solid grey ;

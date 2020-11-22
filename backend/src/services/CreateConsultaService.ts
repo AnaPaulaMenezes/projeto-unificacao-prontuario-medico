@@ -33,7 +33,7 @@ class CreateUser {
     const indisponivel = await consultaRepositorie.find({ where: { dt_consulta, Id_Medico } });
     if (indisponivel.length > 0) {
 
-      throw new AppError('Data e horario indisponivel')
+      throw new AppError('Data ou horário indisponível')
     }
     const dataAtual = new Date()
     if (p) {

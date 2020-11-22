@@ -21,10 +21,11 @@ import {
 } from './styles';
 import api from '../../api';
 import { FormHandles } from '@unform/core';
-import { format } from 'date-fns';
+import { format, Locale } from 'date-fns';
 import Picker, { ListValue } from '../../components/Picker';
 import parseISO from 'date-fns/parseISO'
 import { useNavigation } from '@react-navigation/native';
+import { setMinutes } from 'date-fns/esm';
 
 
 
@@ -114,6 +115,163 @@ const CadastroConsulta: React.FC = () => {
     return state;
   };
 
+  const limparCampos = useCallback(() => {
+    const dataAtual = format(new Date(), 'dd/MM/yyyy');
+    setSelectedData(dataAtual);
+    setSelectedValue("0");
+    setSelectedMedico("0");
+    setSelectedHour('');
+    setHorariosDisponiveis(['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00',
+      '12:00', '13:10', '13:45', '14:00', '14:30', '15:00', '16:00',
+      '17:00', '17:30', '18:00', '19:00'])
+  }, []);
+
+  const handleOnChangeEspecialidade = useCallback(async (value) => {
+    setSelectedValue(value);
+    const response = await api.get(`/medicos/${value}`);
+
+    const formatValues = response.data.map((item: medico) => {
+      return {
+        id: item.Id_Medico,
+        value: item.nome_Medico,
+      }
+    });
+
+    setMedicoValues(formatValues);
+  }, []);
+
+  const handleOnChangeMedico = useCallback(async (value) => {
+    await setSelectedMedico(value);
+    const dataAtual = format(new Date(), 'dd/MM/yyyy');
+    handleDataChange(dataAtual);
+  }, []);
+
+  const handleDataChange = useCallback(async (value) => {
+    console.log(horariosDisponiveis)
+    setSelectedData(value);
+    const dia = value.split("/")[0];
+    const mes = value.split("/")[1];
+    const ano = value.split("/")[2];
+    const date = `${ano}-${mes.slice(-2)}-${dia.slice(-2)}`;
+    const medico = await getSelectedMedico();
+    api.get('consultas/disponibilidade', {
+      params: {
+        Id_Medico: medico,
+        dt_consulta: date
+      }
+    }).then((response) => {
+      const horasDisponiveis = [
+        '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00',
+        '12:00', '13:10', '13:45', '14:00', '14:30', '15:00', '16:00',
+        '17:00', '17:30', '18:00', '19:00'
+
+      ];
+      response.data.map((item) => {
+
+        const horaIndisponivel = format(new Date(item.dt_consulta), 'HH:mm');
+        if (horasDisponiveis.includes(horaIndisponivel)) {
+          var index = horasDisponiveis.indexOf(horaIndisponivel);
+          horasDisponiveis.splice(index, 1);
+        }
+        console.log(horaIndisponivel)
+      })
+
+      setHorariosDisponiveis(horasDisponiveis);
+
+
+    });
+    setSelectedHour('');
+    await getHorariosDisponiveis();
+
+
+  }, [selectedMedico, selectedValue]);
+
+  const handleSelectHour = useCallback(async (hour: string) => {
+    setSelectedHour(hour);
+    await getSelectedHour();
+  }, []);
+
+  const handleConsulta = useCallback(
+    async (data: CadastroConsulta) => {
+
+      try {
+
+        formRef.current?.setErrors({});
+
+        const schema = Yup.object().shape({
+          sintomasPaciente_Consulta: Yup.string().required('Obrigatório'),
+          Id_Medico: Yup.string().notOneOf(["0", ""]).required('Obrigatório'),
+          especialidade_Consulta: Yup.string().notOneOf(["0", ""]).required('Obrigatório'),
+          Id_Estabelecimento: Yup.string().notOneOf(["0", ""]).required('Obrigatório'),
+        });
+
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+
+
+        const dia = selectedData.split("/")[0];
+        const mes = selectedData.split("/")[1];
+        const ano = selectedData.split("/")[2];
+        const dataFormatada = `${ano}-${mes.slice(-2)}-${dia.slice(-2)} ${selectedHour}`;
+        const newData = { ...data, dt_consulta: dataFormatada };
+
+        if (!selectedData) {
+
+          throw new Error('Informe uma data para a consulta');
+        }
+
+
+        if (!selectedHour) {
+          throw new Error('Informe um horário para a consulta');
+
+        }
+
+
+        if (parseISO(dataFormatada) <= new Date()) {
+
+          throw new Error('Data ou horário indisponível');
+        }
+
+
+        const response = await api.post('/consultas', newData);
+
+        Alert.alert('Consulta agendada', 'Consulta agendada com sucesso');
+
+        navigation.goBack();
+        limparCampos();
+
+      }
+      catch (err) {
+
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+          formRef.current?.setErrors(errors);
+          return;
+        }
+
+        let texto;
+        if (err?.request?._response) {
+
+          texto = JSON.parse(err.request._response).message;
+        } else if (err.message) {
+          texto = err.message;
+        } else {
+          texto = 'Ocorreu um erro ao fazer cadastro da consulta, tente novamente.';
+        }
+
+        Alert.alert(
+          'Erro ao agendar consulta',
+          texto
+        );
+
+
+      }
+
+
+    }, [selectedHour, selectedData]);
+
+
   useEffect(() => {
     api.get('especialidades').then((response) => {
       const formatValues = response.data.map((item: especialidade) => {
@@ -153,9 +311,6 @@ const CadastroConsulta: React.FC = () => {
       });
     }
 
-
-
-
     api.get('estabelecimentos').then((response) => {
       const formatValues = response.data.map((item: estabelecimento) => {
         return {
@@ -169,132 +324,9 @@ const CadastroConsulta: React.FC = () => {
 
     const dataAtual = format(new Date(), 'dd/MM/yyyy');
     setSelectedData(dataAtual);
+    handleDataChange(dataAtual);
 
   }, [])
-
-  const handleOnChangeEspecialidade = useCallback(async (value) => {
-    setSelectedValue(value);
-    const response = await api.get(`/medicos/${value}`);
-
-    const formatValues = response.data.map((item: medico) => {
-      return {
-        id: item.Id_Medico,
-        value: item.nome_Medico,
-      }
-    });
-
-    setMedicoValues(formatValues);
-  }, []);
-
-  const handleOnChangeMedico = useCallback(async (value) => {
-    await setSelectedMedico(value);
-  }, []);
-
-  const handleDataChange = useCallback(async (value) => {
-    setSelectedData(value);
-    const dia = value.split("/")[0];
-    const mes = value.split("/")[1];
-    const ano = value.split("/")[2];
-    const date = `${ano}-${mes.slice(-2)}-${dia.slice(-2)}`;
-    const medico = await getSelectedMedico();
-    api.get('consultas/disponibilidade', {
-      params: {
-        Id_Medico: medico,
-        dt_consulta: date
-      }
-    }).then((response) => {
-      const horasDisponiveis = horariosDisponiveis;
-      response.data.map((item) => {
-        const horaIndisponivel = format(new Date(item.dt_consulta), 'HH:mm')
-        if (horariosDisponiveis.includes(horaIndisponivel)) {
-          var index = horasDisponiveis.indexOf(horaIndisponivel);
-          horasDisponiveis.splice(index, 1);
-        }
-
-      })
-
-      setHorariosDisponiveis(horasDisponiveis);
-
-
-    });
-    setSelectedHour('');
-    await getHorariosDisponiveis();
-
-
-  }, []);
-
-  const handleSelectHour = useCallback(async (hour: string) => {
-    setSelectedHour(hour);
-    await getSelectedHour();
-  }, []);
-
-  const handleConsulta = useCallback(
-    async (data: CadastroConsulta) => {
-
-      try {
-
-        formRef.current?.setErrors({});
-
-        const schema = Yup.object().shape({
-          sintomasPaciente_Consulta: Yup.string().required('Obrigatório'),
-          Id_Medico: Yup.string().notOneOf(["0", ""]).required('Obrigatório'),
-          especialidade_Consulta: Yup.string().notOneOf(["0", ""]).required('Obrigatório'),
-          Id_Estabelecimento: Yup.string().notOneOf(["0", ""]).required('Obrigatório'),
-        });
-
-        await schema.validate(data, {
-          abortEarly: false,
-        });
-
-
-        const dia = selectedData.split("/")[0];
-        const mes = selectedData.split("/")[1];
-        const ano = selectedData.split("/")[2];
-        const dataFormatada = `${ano}-${mes.slice(-2)}-${dia.slice(-2)} ${selectedHour}`;
-        const newData = { ...data, dt_consulta: dataFormatada };
-
-        if (!selectedData) {
-
-          throw new Error('Informe uma data para a consulta');
-        }
-
-
-
-        if (parseISO(dataFormatada) <= new Date()) {
-
-          throw new Error('Não é possiel agendar uma consulta para a data informada.');
-        }
-
-        if (!selectedHour) {
-          throw new Error('Informe um horário para a consulta');
-
-        }
-
-
-        const response = await api.post('/consultas', newData);
-
-        Alert.alert('Consulta agendada', 'Consulta agendada com sucesso');
-
-        navigation.goBack();
-        
-      }
-      catch (err) {
-
-        if (err instanceof Yup.ValidationError) {
-          const errors = getValidationErrors(err);
-          formRef.current?.setErrors(errors);
-          return;
-        }
-
-        Alert.alert(
-          'Erro ao cadastrar',
-          err.message ? err.message : 'Ocorreu um erro ao fazer cadastro, tente novamente.',
-        );
-
-      }
-
-
-    }, [selectedHour, selectedData]);
 
 
   return (

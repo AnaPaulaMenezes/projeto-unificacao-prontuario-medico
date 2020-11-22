@@ -11,7 +11,7 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import api from '../../api';
 import { useAuth } from '../../hooks/auth';
 import DatePicker from 'react-native-datepicker';
-import { format, parseISO, startOfHour } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 interface EditData {
   nome_Usuario: string;
@@ -287,7 +287,7 @@ export default function ProfileInfo({ data }) {
       }
 
       Alert.alert(
-        'Erro ao cadastrar',
+        'Erro ao atualizar dados',
         err.message ? err.message : 'Ocorreu um erro ao editar o endereço, tente novamente.',
       );
 
@@ -336,8 +336,8 @@ export default function ProfileInfo({ data }) {
       }
 
       Alert.alert(
-        'Erro ao cadastrar',
-        err.message ? err.message : 'Ocorreu um erro ao editar o endereço, tente novamente.',
+        'Erro ao atualizar dados',
+        err.message ? err.message : 'Ocorreu um erro ao editar informações do paciente, tente novamente.',
       );
     }
   }, [usuario]);
@@ -347,8 +347,9 @@ export default function ProfileInfo({ data }) {
     <>
       <SafeAreaView>
         <ScrollView showsVerticalScrollIndicator={false}>
+          <Title>Editar informações</Title>
           <View style={{ alignSelf: "center" }}>
-            <Title>Editar informações</Title>
+
             <Info>
               <Content>
                 <UserInfo>Informações Hospitalares</UserInfo>
@@ -364,7 +365,7 @@ export default function ProfileInfo({ data }) {
             </Info>
           </View>
           <View style={{ alignSelf: "center" }}>
-            <Title></Title>
+
             <Info>
               <Content>
                 <UserInfo>Dados pessoais</UserInfo>
@@ -379,7 +380,7 @@ export default function ProfileInfo({ data }) {
             </Info>
           </View>
           <View style={{ alignSelf: "center" }}>
-            <Title> </Title>
+
             <Info>
               <Content>
                 <UserInfo>Endereço</UserInfo>
@@ -400,6 +401,7 @@ export default function ProfileInfo({ data }) {
           animationType="slide"
           transparent={true}
           visible={modalVisible}
+          onRequestClose={() => { setModalVisible(false) }}
         >
           <ScrollView>
             <View style={{ backgroundColor: "#000000aa" }}>
@@ -542,6 +544,7 @@ export default function ProfileInfo({ data }) {
           animationType="slide"
           transparent={true}
           visible={modalVisible2}
+          onRequestClose={() => { setModalVisible2(false) }}
         >
           <View style={{ backgroundColor: "#000000aa" }}>
             <ScrollView>
@@ -646,6 +649,7 @@ export default function ProfileInfo({ data }) {
           animationType="slide"
           transparent={true}
           visible={modalVisible3}
+          onRequestClose={() => { setModalVisible3(false) }}
 
         >
           <View style={{ backgroundColor: "#000000aa" }}>

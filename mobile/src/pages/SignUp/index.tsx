@@ -81,21 +81,23 @@ const SignUp: React.FC = () => {
         } else {
           response = await api.post('/users', data);
         }
-        console.log(data)
-        navigation.goBack();
+
 
         if (response.status === 200) {
           Alert.alert(
             'Cadastro realizado',
             'Você já pode fazer seu login na aplicação',
           );
+
+          navigation.goBack();
+
         } else {
-          console.log(response)
           Alert.alert(
-            'Erro ao realizar cadastro',
-            response.data,
+            'Erro ao cadastrar usuário',
+            'Verifique os dados enviados',
           );
         }
+
 
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
