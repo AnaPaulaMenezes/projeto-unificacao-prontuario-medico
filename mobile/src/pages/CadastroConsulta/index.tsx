@@ -334,7 +334,7 @@ const CadastroConsulta: React.FC = () => {
       <ScrollView>
         <Header />
         <Cabeca>
-          <Nome> Cadastro Consultas</Nome>
+          <Nome>Agendar Consulta</Nome>
         </Cabeca>
         <Form
           onSubmit={handleConsulta}
